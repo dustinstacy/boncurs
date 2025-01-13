@@ -1,0 +1,28 @@
+{
+    "name": "boncurs",
+    "description": "Bonding Curve Library for Solidity",
+    "version": "1.0.0-alpha.1",
+    "scripts": {
+        "test": "hardhat test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dustinstacy/boncurs.git"
+    },
+    "keywords": [
+        "bonding",
+        "curve",
+        "solidity",
+        "ethereum",
+        "smart",
+        "contracts"
+    ],
+    "author": "Dustin Stacy",
+    "license": "MIT",
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+        "hardhat": "^2.22.10",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.6.2"
+    }
+}
