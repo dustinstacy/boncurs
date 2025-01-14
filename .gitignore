@@ -2,17 +2,13 @@ node_modules
 .env
 
 # Forge files
-/out
-/cache
-
-# TypeChain files
-/typechain
-/typechain-types
+cache/
+out/
 
 # solidity-coverage files
 /coverage
 /coverage.json
 
 # development files
-/contracts/test
+src/contracts/test
 IBoncurs.sol
