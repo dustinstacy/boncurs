@@ -1,7 +1,7 @@
 {
     "name": "boncurs",
     "description": "Bonding Curve Library for Solidity",
-    "version": "1.0.0-alpha.1",
+    "version": "0.1.0-alpha.1",
     "scripts": {
         "test": "hardhat test"
     },
