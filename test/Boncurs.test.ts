@@ -1,3 +1,0 @@
-describe("Boncurs", () => {
-    beforeEach(async () => {})
-})

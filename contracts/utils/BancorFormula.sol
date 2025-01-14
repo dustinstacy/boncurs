@@ -15,7 +15,7 @@ pragma solidity ^0.8.28;
 // - Added named return values
 // - Added break in generalLog() function for loop
 // - Updated some parameter names to be more descriptive
-abstract contract BancorFormula {
+contract BancorFormula {
     uint256 private constant ONE = 1;
     // Max reserve ratio in parts per million
     uint32 private constant MAX_RATIO = 1000000;
