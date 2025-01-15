@@ -7,62 +7,22 @@ import {console} from "forge-std/console.sol";
 contract BancorFormulaHarness is BancorFormula {
     uint32 private constant MAX_RATIO = 1000000;
 
-    function calculatePurchaseReturnCopy(
+    function calculatePurchaseReturn(
         uint256 _supply,
         uint256 _reserveBalance,
         uint32 _reserveRatio,
         uint256 _depositAmount
     ) external view returns (uint256 purchaseReturn) {
-        console.log("_reserveRatio", _reserveRatio);
-        console.log("MAX_RATIO", MAX_RATIO);
-        if (_supply == 0 || _reserveBalance == 0 || _reserveRatio == 0 || _reserveRatio > MAX_RATIO) {
-            revert InvalidInput();
-        }
-
-        if (_depositAmount == 0) {
-            return 0;
-        }
-
-        if (_reserveRatio == MAX_RATIO) {
-            return (_supply * _depositAmount) / _reserveBalance;
-        }
-
-        uint256 newReserveBalance = (_depositAmount + _reserveBalance);
-        (uint256 result, uint256 precision) = _power(newReserveBalance, _reserveBalance, _reserveRatio, MAX_RATIO);
-        uint256 temp = (_supply * result) >> precision;
-        return temp - _supply;
+        purchaseReturn =
+            super._calculateBancorFormulaPurchaseReturn(_supply, _reserveBalance, _reserveRatio, _depositAmount);
     }
 
-    function calculateSaleReturnCopy(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint32 _reserveRatio,
-        uint256 _sellAmount
-    ) external view returns (uint256 saleReturn) {
-        if (
-            _supply == 0 || _reserveBalance == 0 || _reserveRatio == 0 || _reserveRatio > MAX_RATIO
-                || _sellAmount > _supply
-        ) {
-            revert InvalidInput();
-        }
-
-        if (_sellAmount == 0) {
-            return 0;
-        }
-
-        if (_sellAmount == _supply) {
-            return _reserveBalance;
-        }
-
-        if (_reserveRatio == MAX_RATIO) {
-            return (_reserveBalance * _sellAmount) / _supply;
-        }
-
-        uint256 newSupply = _supply - _sellAmount;
-        (uint256 result, uint256 precision) = _power(_supply, newSupply, MAX_RATIO, _reserveRatio);
-        uint256 temp1 = (_reserveBalance * result);
-        uint256 temp2 = _reserveBalance << precision;
-        return (temp1 - temp2) / result;
+    function calculateSaleReturn(uint256 _supply, uint256 _reserveBalance, uint32 _reserveRatio, uint256 _sellAmount)
+        external
+        view
+        returns (uint256 saleReturn)
+    {
+        saleReturn = super._calculateBancorFormulaSaleReturn(_supply, _reserveBalance, _reserveRatio, _sellAmount);
     }
 
     function power_Harness(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD)
@@ -70,30 +30,30 @@ contract BancorFormulaHarness is BancorFormula {
         view
         returns (uint256 result, uint256 precision)
     {
-        return super._power(_baseN, _baseD, _expN, _expD);
+        (result, precision) = super._power(_baseN, _baseD, _expN, _expD);
     }
 
     function generalLog_Harness(uint256 x) external pure returns (uint256 result) {
-        return super._generalLog(x);
+        result = super._generalLog(x);
     }
 
     function floorLog2_Harness(uint256 _n) external pure returns (uint8 result) {
-        return super._floorLog2(_n);
+        result = super._floorLog2(_n);
     }
 
     function findPositionInMaxExpArray_Harness(uint256 _x) external view returns (uint8 position) {
-        return super._findPositionInMaxExpArray(_x);
+        position = super._findPositionInMaxExpArray(_x);
     }
 
     function generalExp_Harness(uint256 x, uint8 precision) external pure returns (uint256 result) {
-        return super._generalExp(x, precision);
+        result = super._generalExp(x, precision);
     }
 
     function optimalLog_Harness(uint256 x) external pure returns (uint256 result) {
-        return super._optimalLog(x);
+        result = super._optimalLog(x);
     }
 
     function optimalExp_Harness(uint256 x) external pure returns (uint256 result) {
-        return super._optimalExp(x);
+        result = super._optimalExp(x);
     }
 }

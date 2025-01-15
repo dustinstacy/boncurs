@@ -45,7 +45,7 @@ abstract contract BancorFormula {
     /// @dev The array of values used to find the precision needed for the given input
     uint256[128] private maxExpArray;
 
-    error InvalidInput();
+    error BancorFormula__InvalidInput();
 
     constructor() {
         //  maxExpArray[  0] = 0x6bffffffffffffffffffffffffffffffff;
@@ -192,15 +192,15 @@ abstract contract BancorFormula {
      *
      *     @return purchaseReturn return amount
      */
-    function calculatePurchaseReturn(
+    function _calculateBancorFormulaPurchaseReturn(
         uint256 _supply,
         uint256 _reserveBalance,
         uint32 _reserveRatio,
         uint256 _depositAmount
-    ) external view returns (uint256 purchaseReturn) {
+    ) internal view returns (uint256 purchaseReturn) {
         // validate input
         if (_supply == 0 || _reserveBalance == 0 || _reserveRatio == 0 || _reserveRatio > MAX_RATIO) {
-            revert InvalidInput();
+            revert BancorFormula__InvalidInput();
         }
 
         // special case for 0 deposit amount
@@ -235,17 +235,18 @@ abstract contract BancorFormula {
      *
      *     @return saleReturn return amount
      */
-    function calculateSaleReturn(uint256 _supply, uint256 _reserveBalance, uint32 _reserveRatio, uint256 _sellAmount)
-        external
-        view
-        returns (uint256 saleReturn)
-    {
+    function _calculateBancorFormulaSaleReturn(
+        uint256 _supply,
+        uint256 _reserveBalance,
+        uint32 _reserveRatio,
+        uint256 _sellAmount
+    ) internal view returns (uint256 saleReturn) {
         // validate input
         if (
             _supply == 0 || _reserveBalance == 0 || _reserveRatio == 0 || _reserveRatio > MAX_RATIO
                 || _sellAmount > _supply
         ) {
-            revert InvalidInput();
+            revert BancorFormula__InvalidInput();
         }
 
         // special case for 0 sell amount
@@ -304,7 +305,7 @@ abstract contract BancorFormula {
         returns (uint256 result, uint8 precision)
     {
         if (_baseN >= MAX_NUM) {
-            revert InvalidInput();
+            revert BancorFormula__InvalidInput();
         }
 
         uint256 baseLog;
