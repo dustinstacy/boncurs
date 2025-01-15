@@ -3,20 +3,22 @@ pragma solidity ^0.8.28;
 
 import {console} from "forge-std/console.sol";
 
-// Updated version of the BancorFormula contract from the Bancor Protocol
-// Editted to be compatible with Solidity 0.8.28
-// Changes made:
-// - Changed compilier to Solidity 0.8.28
-// - Changed to an abstract contract
-// - Removed Utils import
-// - Removed safe math functions
-// - Removed version variable
-// - Removed calculateCrossConnectorReturn()
-// - Removed require statements in favor of custom errors
-// - Added comments for clarity
-// - Added named return values
-// - Added break in generalLog() function for loop
-// - Updated some parameter names to be more descriptive
+/// @notice Updated version of the BancorFormula contract from the Bancor Protocol
+/// @notice Editted to be compatible with Solidity 0.8.28
+/// @dev Changes made:
+/// - Changed compilier to Solidity 0.8.28
+/// - Changed to an abstract contract
+/// - Removed Utils import
+/// - Removed safe math functions
+/// - Removed version variable
+/// - Removed calculateCrossConnectorReturn()
+/// - Removed require statements in favor of custom errors
+/// - Added comments for clarity
+/// - Added named return values
+/// - Added break in _generalLog() function for loop
+/// - Updated some parameter names to be more descriptive
+/// - Added leading _ to internal function names
+/// - Reordered internal functions to group view and pure
 abstract contract BancorFormula {
     uint256 private constant ONE = 1;
     // Max reserve ratio in parts per million
@@ -28,10 +30,10 @@ abstract contract BancorFormula {
 
     /// @dev The following values are used for precision in the fixed point arithmetic.
     /// @dev Powers of 2 are computationally efficient because shifting left or right by X is the same as multiplying or dividing by 2^X
-    uint256 private constant FIXED_1 = 0x080000000000000000000000000000000; // 2^60
-    uint256 private constant FIXED_2 = 0x100000000000000000000000000000000; // 2^64
+    uint256 private constant FIXED_1 = 0x080000000000000000000000000000000; // 2^127 or 1.7014e38
+    uint256 private constant FIXED_2 = 0x100000000000000000000000000000000; // 2^128 or 3.4028e38
     /// @dev Value is capped to prevent overflow
-    uint256 private constant MAX_NUM = 0x200000000000000000000000000000000;
+    uint256 private constant MAX_NUM = 0x200000000000000000000000000000000; // 2^129 or 6.8056e38
 
     uint256 private constant LN2_NUMERATOR = 0x3f80fe03f80fe03f80fe03f80fe03f8;
     uint256 private constant LN2_DENOMINATOR = 0x5b9de1d10bf4103d647b0955897ba80;
@@ -212,7 +214,7 @@ abstract contract BancorFormula {
         }
 
         uint256 newReserveBalance = (_depositAmount + _reserveBalance);
-        (uint256 result, uint256 precision) = power(newReserveBalance, _reserveBalance, _reserveRatio, MAX_RATIO);
+        (uint256 result, uint256 precision) = _power(newReserveBalance, _reserveBalance, _reserveRatio, MAX_RATIO);
         // Calculate new supply after the deposit and bit shift it to the right by the precision
         uint256 temp = (_supply * result) >> precision;
         // Return the difference between the new supply and the old supply to get the purchase return
@@ -262,7 +264,7 @@ abstract contract BancorFormula {
         }
 
         uint256 newSupply = _supply - _sellAmount;
-        (uint256 result, uint256 precision) = power(_supply, newSupply, MAX_RATIO, _reserveRatio);
+        (uint256 result, uint256 precision) = _power(_supply, newSupply, MAX_RATIO, _reserveRatio);
         // Scale current reserve balance by the result
         uint256 temp1 = (_reserveBalance * result);
         // Bit-shift the non scaled reserve balance by the precision for compatibility
@@ -296,7 +298,7 @@ abstract contract BancorFormula {
      *     @return result       exponentiation result
      *     @return precision    precision used
      */
-    function power(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD)
+    function _power(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD)
         internal
         view
         returns (uint256 result, uint8 precision)
@@ -308,27 +310,64 @@ abstract contract BancorFormula {
         uint256 baseLog;
         // Scaled ratio of the two bases
         uint256 base = _baseN * FIXED_1 / _baseD;
+        console.log("base", base);
 
         // If the base is less than the optimal value, we can use the optimal function for the logarithm
         // This is computationally more efficient
         if (base < OPT_LOG_MAX_VAL) {
-            baseLog = optimalLog(base);
+            baseLog = _optimalLog(base);
+            console.log("baseLog", baseLog);
         } else {
-            baseLog = generalLog(base);
+            baseLog = _generalLog(base);
         }
 
         // Scale that baseLog by the ratio of the exponents
         uint256 baseLogTimesExp = baseLog * _expN / _expD;
+        console.log("baseLogTimeExp", baseLogTimesExp);
 
         // If the baseLogTimesExp is less than the optimal value, we can use the optimal fuction for the exponentiation
         // This is computationally more efficient
         if (baseLogTimesExp < OPT_EXP_MAX_VAL) {
-            return (optimalExp(baseLogTimesExp), MAX_PRECISION);
+            return (_optimalExp(baseLogTimesExp), MAX_PRECISION);
         } else {
             // Find the highest precision (maxExpArray index) for the input
-            precision = findPositionInMaxExpArray(baseLogTimesExp);
-            return (generalExp(baseLogTimesExp >> (MAX_PRECISION - precision), precision), precision);
+            precision = _findPositionInMaxExpArray(baseLogTimesExp);
+            console.log("here8");
+            return (_generalExp(baseLogTimesExp >> (MAX_PRECISION - precision), precision), precision);
         }
+    }
+
+    /**
+     * The global "maxExpArray" is sorted in descending order, and therefore the following statements are equivalent:
+     *     - This function finds the position of [the smallest value in "maxExpArray" larger than or equal to "x"]
+     *     - This function finds the highest position of [a value in "maxExpArray" larger than or equal to "x"]
+     *
+     *      @param _x           input
+     *
+     *      @return position    position of the value in the array
+     */
+    function _findPositionInMaxExpArray(uint256 _x) internal view returns (uint8 position) {
+        uint8 lo = MIN_PRECISION;
+        uint8 hi = MAX_PRECISION;
+
+        while (lo + 1 < hi) {
+            uint8 mid = (lo + hi) / 2;
+            if (maxExpArray[mid] >= _x) {
+                lo = mid;
+            } else {
+                hi = mid;
+            }
+        }
+
+        if (maxExpArray[hi] >= _x) {
+            return hi;
+        }
+        if (maxExpArray[lo] >= _x) {
+            return lo;
+        }
+
+        require(false);
+        return 0;
     }
 
     /**
@@ -339,10 +378,10 @@ abstract contract BancorFormula {
      *
      *     @return result   logarithm of x
      */
-    function generalLog(uint256 x) internal pure returns (uint256 result) {
+    function _generalLog(uint256 x) internal pure returns (uint256 result) {
         // If x >= 2, then we compute the integer part of log2(x), which is larger than 0.
         if (x >= FIXED_2) {
-            uint8 count = floorLog2(x / FIXED_1);
+            uint8 count = _floorLog2(x / FIXED_1);
             // Remove the integer part of x
             x >>= count; // now x < 2
             // Add the integer part of the logarithm to the result
@@ -377,7 +416,7 @@ abstract contract BancorFormula {
      *
      *      @return result  result
      */
-    function floorLog2(uint256 _n) internal pure returns (uint8 result) {
+    function _floorLog2(uint256 _n) internal pure returns (uint8 result) {
         if (_n < 256) {
             // At most 8 iterations
             while (_n > 1) {
@@ -400,39 +439,6 @@ abstract contract BancorFormula {
     }
 
     /**
-     * The global "maxExpArray" is sorted in descending order, and therefore the following statements are equivalent:
-     *     - This function finds the position of [the smallest value in "maxExpArray" larger than or equal to "x"]
-     *     - This function finds the highest position of [a value in "maxExpArray" larger than or equal to "x"]
-     *
-     *      @param _x           input
-     *
-     *      @return position    position of the value in the array
-     */
-    function findPositionInMaxExpArray(uint256 _x) internal view returns (uint8 position) {
-        uint8 lo = MIN_PRECISION;
-        uint8 hi = MAX_PRECISION;
-
-        while (lo + 1 < hi) {
-            uint8 mid = (lo + hi) / 2;
-            if (maxExpArray[mid] >= _x) {
-                lo = mid;
-            } else {
-                hi = mid;
-            }
-        }
-
-        if (maxExpArray[hi] >= _x) {
-            return hi;
-        }
-        if (maxExpArray[lo] >= _x) {
-            return lo;
-        }
-
-        require(false);
-        return 0;
-    }
-
-    /**
      * This function can be auto-generated by the script 'PrintFunctionGeneralExp.py'.
      *     It approximates "e ^ x" via maclaurin summation: "(x^0)/0! + (x^1)/1! + ... + (x^n)/n!".
      *     It returns "e ^ (x / 2 ^ precision) * 2 ^ precision", that is, the result is upshifted for accuracy.
@@ -444,7 +450,7 @@ abstract contract BancorFormula {
      *
      *     @return result      result
      */
-    function generalExp(uint256 _x, uint8 _precision) internal pure returns (uint256 result) {
+    function _generalExp(uint256 _x, uint8 _precision) internal pure returns (uint256 result) {
         uint256 xi = _x;
 
         // Continually preserve precision to avoid overflow
@@ -520,7 +526,7 @@ abstract contract BancorFormula {
 
     /**
      * Return log(x / FIXED_1) * FIXED_1
-     *     Input range: FIXED_1 <= x <= LOG_EXP_MAX_VAL - 1
+     *     Input range: FIXED_1 <= x <= OPT_LOG_MAX_VAL - 1
      *     Auto-generated via 'PrintFunctionOptimalLog.py'
      *     Detailed description:
      *     - Rewrite the input as a product of natural exponents and a single residual r, such that 1 < r < 2
@@ -533,7 +539,7 @@ abstract contract BancorFormula {
      *
      *     @return result   result
      */
-    function optimalLog(uint256 x) internal pure returns (uint256 result) {
+    function _optimalLog(uint256 x) internal pure returns (uint256 result) {
         uint256 y;
         uint256 z;
         uint256 w;
@@ -541,10 +547,7 @@ abstract contract BancorFormula {
         // Decompose x into small integers for efficient log calculation
         if (x >= 0xd3094c70f034de4b96ff7d5b6f99fcd8) {
             result += 0x40000000000000000000000000000000;
-            console.log("result", result);
-            console.log("x", x);
             x = x * FIXED_1 / 0xd3094c70f034de4b96ff7d5b6f99fcd8;
-            console.log("x", x);
         } // add 1 / 2^1
         if (x >= 0xa45af1e1f40c333b3de1db4dd55f29a7) {
             result += 0x20000000000000000000000000000000;
@@ -613,7 +616,7 @@ abstract contract BancorFormula {
      *     @return result   result
      *
      */
-    function optimalExp(uint256 x) internal pure returns (uint256 result) {
+    function _optimalExp(uint256 x) internal pure returns (uint256 result) {
         uint256 y;
         uint256 z;
 
