@@ -17,25 +17,25 @@ contract BancorFormulaTest is Test {
     uint8 constant MAX_PRECISION = 127;
     uint8 constant ONE = 1;
 
-    error InvalidInput();
+    error BancorFormula__InvalidInput();
 
     function setUp() public {
         harness = new BancorFormulaHarness();
     }
 
     function test_Revert_CalculatePurchaseReturn() public {
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculatePurchaseReturnCopy(0, ONE, ONE, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculatePurchaseReturn(0, ONE, ONE, 0);
 
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculatePurchaseReturnCopy(ONE, 0, ONE, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculatePurchaseReturn(ONE, 0, ONE, 0);
 
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculatePurchaseReturnCopy(ONE, ONE, 0, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculatePurchaseReturn(ONE, ONE, 0, 0);
 
         console.log("here");
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculatePurchaseReturnCopy(ONE, ONE, MAX_RATIO + 1, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculatePurchaseReturn(ONE, ONE, MAX_RATIO + 1, 0);
     }
 
     function test_PurchaseReturnDepositAmountZero() public view {
@@ -44,7 +44,7 @@ contract BancorFormulaTest is Test {
         uint32 reserveRatio = 500000; // 50%
         uint256 depositAmount = 0;
 
-        uint256 result = harness.calculatePurchaseReturnCopy(supply, reserveBalance, reserveRatio, depositAmount);
+        uint256 result = harness.calculatePurchaseReturn(supply, reserveBalance, reserveRatio, depositAmount);
         assertEq(result, 0);
     }
 
@@ -54,25 +54,25 @@ contract BancorFormulaTest is Test {
         uint32 reserveRatio = MAX_RATIO; // 100%
         uint256 depositAmount = 1e21; // 1,000 Ether
 
-        uint256 result = harness.calculatePurchaseReturnCopy(supply, reserveBalance, reserveRatio, depositAmount);
+        uint256 result = harness.calculatePurchaseReturn(supply, reserveBalance, reserveRatio, depositAmount);
         assertEq(result, (supply * depositAmount) / reserveBalance);
     }
 
     function test_RevertCalculateSaleReturn() public {
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculateSaleReturnCopy(0, ONE, ONE, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculateSaleReturn(0, ONE, ONE, 0);
 
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculateSaleReturnCopy(ONE, 0, ONE, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculateSaleReturn(ONE, 0, ONE, 0);
 
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculateSaleReturnCopy(ONE, ONE, 0, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculateSaleReturn(ONE, ONE, 0, 0);
 
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculateSaleReturnCopy(ONE, ONE, MAX_RATIO + 1, 0);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculateSaleReturn(ONE, ONE, MAX_RATIO + 1, 0);
 
-        vm.expectRevert(InvalidInput.selector);
-        harness.calculateSaleReturnCopy(0, ONE, ONE, ONE);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
+        harness.calculateSaleReturn(0, ONE, ONE, ONE);
     }
 
     function test_SaleReturnSellAmountZero() public view {
@@ -81,7 +81,7 @@ contract BancorFormulaTest is Test {
         uint32 reserveRatio = 500000; // 50%
         uint256 sellAmount = 0;
 
-        uint256 result = harness.calculateSaleReturnCopy(supply, reserveBalance, reserveRatio, sellAmount);
+        uint256 result = harness.calculateSaleReturn(supply, reserveBalance, reserveRatio, sellAmount);
         assertEq(result, 0);
     }
 
@@ -91,7 +91,7 @@ contract BancorFormulaTest is Test {
         uint32 reserveRatio = 500000; // 50%
         uint256 sellAmount = supply;
 
-        uint256 result = harness.calculateSaleReturnCopy(supply, reserveBalance, reserveRatio, sellAmount);
+        uint256 result = harness.calculateSaleReturn(supply, reserveBalance, reserveRatio, sellAmount);
         assertEq(result, reserveBalance);
     }
 
@@ -101,7 +101,7 @@ contract BancorFormulaTest is Test {
         uint32 reserveRatio = MAX_RATIO; // 100%
         uint256 sellAmount = 1e21; // 1,000 Ether
 
-        uint256 result = harness.calculateSaleReturnCopy(supply, reserveBalance, reserveRatio, sellAmount);
+        uint256 result = harness.calculateSaleReturn(supply, reserveBalance, reserveRatio, sellAmount);
         assertEq(result, (reserveBalance * sellAmount) / supply);
     }
 
@@ -112,7 +112,7 @@ contract BancorFormulaTest is Test {
         uint32 reasonableReserveRatio = 500000; // 50%
         uint256 reasonableDepositAmount = 1e21; // 1,000 Ether
 
-        harness.calculatePurchaseReturnCopy(
+        harness.calculatePurchaseReturn(
             reasonableSupply, reasonableReserveBalance, reasonableReserveRatio, reasonableDepositAmount
         );
 
@@ -124,20 +124,20 @@ contract BancorFormulaTest is Test {
 
         // test lowerBounds
         // Assume minimum input values
-        harness.calculatePurchaseReturnCopy(ONE, ONE, ONE, 0);
+        harness.calculatePurchaseReturn(ONE, ONE, ONE, 0);
 
         // test range of bounds
-        harness.calculatePurchaseReturnCopy(supplyUpperBound, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
-        harness.calculatePurchaseReturnCopy(supplyUpperBound, reserveBalanceUpperBound, ONE, depositAmountUpperBound);
-        harness.calculatePurchaseReturnCopy(supplyUpperBound, ONE, reserveRatioUpperBound, depositAmountUpperBound);
-        harness.calculatePurchaseReturnCopy(supplyUpperBound, ONE, ONE, depositAmountUpperBound);
-        harness.calculatePurchaseReturnCopy(supplyUpperBound, ONE, reserveRatioUpperBound, ONE);
-        harness.calculatePurchaseReturnCopy(supplyUpperBound, reserveBalanceUpperBound, ONE, ONE);
-        harness.calculatePurchaseReturnCopy(ONE, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
-        harness.calculatePurchaseReturnCopy(supplyUpperBound, ONE, ONE, ONE);
+        harness.calculatePurchaseReturn(supplyUpperBound, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
+        harness.calculatePurchaseReturn(supplyUpperBound, reserveBalanceUpperBound, ONE, depositAmountUpperBound);
+        harness.calculatePurchaseReturn(supplyUpperBound, ONE, reserveRatioUpperBound, depositAmountUpperBound);
+        harness.calculatePurchaseReturn(supplyUpperBound, ONE, ONE, depositAmountUpperBound);
+        harness.calculatePurchaseReturn(supplyUpperBound, ONE, reserveRatioUpperBound, ONE);
+        harness.calculatePurchaseReturn(supplyUpperBound, reserveBalanceUpperBound, ONE, ONE);
+        harness.calculatePurchaseReturn(ONE, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
+        harness.calculatePurchaseReturn(supplyUpperBound, ONE, ONE, ONE);
 
         // test upperBounds
-        harness.calculatePurchaseReturnCopy(
+        harness.calculatePurchaseReturn(
             supplyUpperBound, reserveBalanceUpperBound, reserveRatioUpperBound, depositAmountUpperBound
         );
     }
@@ -149,7 +149,7 @@ contract BancorFormulaTest is Test {
         uint32 reasonableReserveRatio = 500000; // 50%
         uint256 reasonableSaleAmount = 1e21; // 1,000 Ether
 
-        harness.calculatePurchaseReturnCopy(
+        harness.calculatePurchaseReturn(
             reasonableSupply, reasonableReserveBalance, reasonableReserveRatio, reasonableSaleAmount
         );
 
@@ -161,20 +161,20 @@ contract BancorFormulaTest is Test {
 
         // test lowerBounds
         // Assume minimum input values
-        harness.calculateSaleReturnCopy(ONE, ONE, ONE, 0);
+        harness.calculateSaleReturn(ONE, ONE, ONE, 0);
 
         // test range of bounds
-        harness.calculateSaleReturnCopy(supplyUpperBound, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
-        harness.calculateSaleReturnCopy(supplyUpperBound, reserveBalanceUpperBound, ONE, saleAmountUpperBound);
-        harness.calculateSaleReturnCopy(supplyUpperBound, ONE, reserveRatioUpperBound, saleAmountUpperBound);
-        harness.calculateSaleReturnCopy(supplyUpperBound, ONE, ONE, saleAmountUpperBound);
-        harness.calculateSaleReturnCopy(supplyUpperBound, ONE, reserveRatioUpperBound, ONE);
-        harness.calculateSaleReturnCopy(supplyUpperBound, reserveBalanceUpperBound, ONE, ONE);
-        harness.calculateSaleReturnCopy(ONE, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
-        harness.calculateSaleReturnCopy(supplyUpperBound, ONE, ONE, ONE);
+        harness.calculateSaleReturn(supplyUpperBound, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
+        harness.calculateSaleReturn(supplyUpperBound, reserveBalanceUpperBound, ONE, saleAmountUpperBound);
+        harness.calculateSaleReturn(supplyUpperBound, ONE, reserveRatioUpperBound, saleAmountUpperBound);
+        harness.calculateSaleReturn(supplyUpperBound, ONE, ONE, saleAmountUpperBound);
+        harness.calculateSaleReturn(supplyUpperBound, ONE, reserveRatioUpperBound, ONE);
+        harness.calculateSaleReturn(supplyUpperBound, reserveBalanceUpperBound, ONE, ONE);
+        harness.calculateSaleReturn(ONE, reserveBalanceUpperBound, reserveRatioUpperBound, ONE);
+        harness.calculateSaleReturn(supplyUpperBound, ONE, ONE, ONE);
 
         // test upperBounds
-        harness.calculateSaleReturnCopy(
+        harness.calculateSaleReturn(
             supplyUpperBound, reserveBalanceUpperBound, reserveRatioUpperBound, saleAmountUpperBound
         );
     }
@@ -182,7 +182,7 @@ contract BancorFormulaTest is Test {
     // Internal view functions not fuzz tested
 
     function test_RevertPower() public {
-        vm.expectRevert(InvalidInput.selector);
+        vm.expectRevert(BancorFormula__InvalidInput.selector);
         harness.power_Harness(MAX_NUM, ONE, ONE, ONE);
     }
 
