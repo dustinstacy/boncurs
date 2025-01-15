@@ -310,20 +310,17 @@ abstract contract BancorFormula {
         uint256 baseLog;
         // Scaled ratio of the two bases
         uint256 base = _baseN * FIXED_1 / _baseD;
-        console.log("base", base);
 
         // If the base is less than the optimal value, we can use the optimal function for the logarithm
         // This is computationally more efficient
         if (base < OPT_LOG_MAX_VAL) {
             baseLog = _optimalLog(base);
-            console.log("baseLog", baseLog);
         } else {
             baseLog = _generalLog(base);
         }
 
         // Scale that baseLog by the ratio of the exponents
         uint256 baseLogTimesExp = baseLog * _expN / _expD;
-        console.log("baseLogTimeExp", baseLogTimesExp);
 
         // If the baseLogTimesExp is less than the optimal value, we can use the optimal fuction for the exponentiation
         // This is computationally more efficient
@@ -332,7 +329,6 @@ abstract contract BancorFormula {
         } else {
             // Find the highest precision (maxExpArray index) for the input
             precision = _findPositionInMaxExpArray(baseLogTimesExp);
-            console.log("here8");
             return (_generalExp(baseLogTimesExp >> (MAX_PRECISION - precision), precision), precision);
         }
     }

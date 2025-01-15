@@ -13,6 +13,8 @@ contract BancorFormulaHarness is BancorFormula {
         uint32 _reserveRatio,
         uint256 _depositAmount
     ) external view returns (uint256 purchaseReturn) {
+        console.log("_reserveRatio", _reserveRatio);
+        console.log("MAX_RATIO", MAX_RATIO);
         if (_supply == 0 || _reserveBalance == 0 || _reserveRatio == 0 || _reserveRatio > MAX_RATIO) {
             revert InvalidInput();
         }
@@ -58,7 +60,6 @@ contract BancorFormulaHarness is BancorFormula {
 
         uint256 newSupply = _supply - _sellAmount;
         (uint256 result, uint256 precision) = _power(_supply, newSupply, MAX_RATIO, _reserveRatio);
-        console.log("here");
         uint256 temp1 = (_reserveBalance * result);
         uint256 temp2 = _reserveBalance << precision;
         return (temp1 - temp2) / result;
