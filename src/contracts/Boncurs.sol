@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import {BancorFormula} from "./utils/BancorFormula.sol";
-import {IBoncurs} from "./IBoncurs.sol";
 
 abstract contract Boncurs {
     BancorFormula public bancorFormula;
