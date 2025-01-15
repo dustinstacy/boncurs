@@ -191,11 +191,28 @@ contract BancorFormulaTest is Test {
         // Highly varied inputs here will lead to error in the _findPositionInMaxExpArray function
         // Makes fuzz testing this and Sale return difficult based on numerator and denominator relations
         // Fairly certain based on test results that expanindg the maxExpArray will help to handle these edge cases
-        // sanity check
+
+        // trigger _optimalLog() & _optimalExp()
         uint256 baseN = 1e18;
         uint256 baseD = 1e18;
         uint32 expN = 500000;
         uint32 expD = 1000000;
+
+        harness.power_Harness(baseN, baseD, expN, expD);
+
+        // trigger _generalLog() & _optimalExp()
+        baseN = 1e21;
+        baseD = 1e18;
+        expN = 500000;
+        expD = 1000000;
+
+        harness.power_Harness(baseN, baseD, expN, expD);
+
+        // trigger _generalLog() & _generalExp()
+        baseN = 1e21;
+        baseD = 1e18;
+        expN = 1000000;
+        expD = 250000;
 
         harness.power_Harness(baseN, baseD, expN, expD);
     }
