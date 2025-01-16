@@ -2,19 +2,15 @@
 pragma solidity ^0.8.28;
 
 import {BancorFormula} from "src/contracts/utils/BancorFormula.sol";
-import {console} from "forge-std/console.sol";
 
 contract BancorFormulaHarness is BancorFormula {
-    uint32 private constant MAX_RATIO = 1000000;
-
     function calculatePurchaseReturn(
         uint256 _supply,
         uint256 _reserveBalance,
         uint32 _reserveRatio,
         uint256 _depositAmount
     ) external view returns (uint256 purchaseReturn) {
-        purchaseReturn =
-            super._calculateBancorFormulaPurchaseReturn(_supply, _reserveBalance, _reserveRatio, _depositAmount);
+        purchaseReturn = _calculateBancorFormulaPurchaseReturn(_supply, _reserveBalance, _reserveRatio, _depositAmount);
     }
 
     function calculateSaleReturn(uint256 _supply, uint256 _reserveBalance, uint32 _reserveRatio, uint256 _sellAmount)
@@ -22,7 +18,7 @@ contract BancorFormulaHarness is BancorFormula {
         view
         returns (uint256 saleReturn)
     {
-        saleReturn = super._calculateBancorFormulaSaleReturn(_supply, _reserveBalance, _reserveRatio, _sellAmount);
+        saleReturn = _calculateBancorFormulaSaleReturn(_supply, _reserveBalance, _reserveRatio, _sellAmount);
     }
 
     function power_Harness(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD)
@@ -30,30 +26,30 @@ contract BancorFormulaHarness is BancorFormula {
         view
         returns (uint256 result, uint256 precision)
     {
-        (result, precision) = super._power(_baseN, _baseD, _expN, _expD);
+        (result, precision) = _power(_baseN, _baseD, _expN, _expD);
     }
 
     function generalLog_Harness(uint256 x) external pure returns (uint256 result) {
-        result = super._generalLog(x);
+        result = _generalLog(x);
     }
 
     function floorLog2_Harness(uint256 _n) external pure returns (uint8 result) {
-        result = super._floorLog2(_n);
+        result = _floorLog2(_n);
     }
 
     function findPositionInMaxExpArray_Harness(uint256 _x) external view returns (uint8 position) {
-        position = super._findPositionInMaxExpArray(_x);
+        position = _findPositionInMaxExpArray(_x);
     }
 
     function generalExp_Harness(uint256 x, uint8 precision) external pure returns (uint256 result) {
-        result = super._generalExp(x, precision);
+        result = _generalExp(x, precision);
     }
 
     function optimalLog_Harness(uint256 x) external pure returns (uint256 result) {
-        result = super._optimalLog(x);
+        result = _optimalLog(x);
     }
 
     function optimalExp_Harness(uint256 x) external pure returns (uint256 result) {
-        result = super._optimalExp(x);
+        result = _optimalExp(x);
     }
 }
