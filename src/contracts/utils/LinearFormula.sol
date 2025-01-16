@@ -62,6 +62,7 @@ abstract contract LinearFormula {
         uint256 _supply,
         uint256 _reserveBalance,
         uint256 _initialPrice,
+        uint32 _scalingFactor,
         uint256 _sellAmount
     ) internal pure returns (uint256 saleReturn) {}
 
