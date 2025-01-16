@@ -38,23 +38,23 @@ abstract contract LinearFormula {
 
         while (remainingDeposit >= currentTokenCost && currentTokenCost != previousTokenCost) {
             remainingDeposit -= currentTokenCost;
-            console.log("remainingDeposit: ", remainingDeposit);
+            ("remainingDeposit: ", remainingDeposit);
             purchaseReturn += WAD;
-            console.log("purchaseReturn: ", purchaseReturn);
+            ("purchaseReturn: ", purchaseReturn);
             previousTokenCost = currentTokenCost;
-            console.log("previousTokenCost: ", previousTokenCost);
+            ("previousTokenCost: ", previousTokenCost);
             currentToken++;
-            console.log("currentToken: ", currentToken);
+            ("currentToken: ", currentToken);
             currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
         }
 
         if (remainingDeposit > 0) {
-            console.log("remainingDeposit: ", remainingDeposit);
+            ("remainingDeposit: ", remainingDeposit);
             purchaseReturn += remainingDeposit * WAD / currentTokenCost;
-            console.log("purchaseReturn: ", purchaseReturn);
+            ("purchaseReturn: ", purchaseReturn);
         }
 
-        console.log("purchaseReturn: ", purchaseReturn);
+        ("purchaseReturn: ", purchaseReturn);
         return purchaseReturn;
     }
 
