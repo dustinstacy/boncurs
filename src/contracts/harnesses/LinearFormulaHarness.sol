@@ -15,12 +15,14 @@ contract LinearFormulaHarness is LinearFormula {
             _calculateLinearPurchaseReturn(_supply, _reserveBalance, _initialReserve, _scalingFactor, _depositAmount);
     }
 
-    function calculateSaleReturn(uint256 _supply, uint256 _reserveBalance, uint256 _initialReserve, uint256 _sellAmount)
-        external
-        pure
-        returns (uint256 saleReturn)
-    {
-        saleReturn = _calculateLinearSaleReturn(_supply, _reserveBalance, _initialReserve, _sellAmount);
+    function calculateSaleReturn(
+        uint256 _supply,
+        uint256 _reserveBalance,
+        uint256 _initialReserve,
+        uint32 _scalingFactor,
+        uint256 _sellAmount
+    ) external pure returns (uint256 saleReturn) {
+        saleReturn = _calculateLinearSaleReturn(_supply, _reserveBalance, _initialReserve, _scalingFactor, _sellAmount);
     }
 
     function totalCostOfTokens(uint256 _currentToken, uint256 _scalingFactor, uint256 _initialReserve)
