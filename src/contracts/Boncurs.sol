@@ -3,8 +3,9 @@ pragma solidity ^0.8.28;
 
 import {BancorFormula} from "./utils/BancorFormula.sol";
 import {LinearFormula} from "./utils/LinearFormula.sol";
+import {LinearFormulaV2} from "./utils/LinearFormulaV2.sol";
 
-abstract contract Boncurs is BancorFormula, LinearFormula {
+abstract contract Boncurs is BancorFormula, LinearFormula, LinearFormulaV2 {
     function _getBancorFormulaPurchaseReturn(
         uint256 _supply,
         uint256 _reserveBalance,
@@ -41,5 +42,25 @@ abstract contract Boncurs is BancorFormula, LinearFormula {
         uint256 _depositAmount
     ) internal pure returns (uint256 saleReturn) {
         return _calculateLinearSaleReturn(_supply, _reserveBalance, _initialPrice, _scalingFactor, _depositAmount);
+    }
+
+    function _getLinearFormulaV2PurchaseReturn(
+        uint256 _supply,
+        uint256 _reserveBalance,
+        uint256 _initialPrice,
+        uint32 _scalingFactor,
+        uint256 _depositAmount
+    ) internal pure returns (uint256 purchaseReturn) {
+        return _calculateLinearV2PurchaseReturn(_supply, _reserveBalance, _initialPrice, _scalingFactor, _depositAmount);
+    }
+
+    function _getLinearFormulaV2SaleReturn(
+        uint256 _supply,
+        uint256 _reserveBalance,
+        uint256 _initialPrice,
+        uint32 _scalingFactor,
+        uint256 _depositAmount
+    ) internal pure returns (uint256 saleReturn) {
+        return _calculateLinearV2SaleReturn(_supply, _reserveBalance, _initialPrice, _scalingFactor, _depositAmount);
     }
 }
