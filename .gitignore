@@ -10,5 +10,4 @@ out/
 /coverage.json
 
 # development files
-src/contracts/test
-IBoncurs.sol
+src/dev
