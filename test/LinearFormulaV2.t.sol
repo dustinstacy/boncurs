@@ -22,7 +22,7 @@ contract LinearFormulaV2Test is Test {
         uint256 depositAmount = WAD;
 
         uint256 purchaseReturn =
-            harness.calculateLinearPurchasev2(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
+            harness.calculateLinearV2PurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         // Gas 10578
         // Purchase Return 907614213197969543 (.907614213197969543)
@@ -33,7 +33,7 @@ contract LinearFormulaV2Test is Test {
         depositAmount = WAD * 894;
 
         purchaseReturn =
-            harness.calculateLinearPurchasev2(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
+            harness.calculateLinearV2PurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         // Gas 15041
         // Purchase Return 15222222222222222222 (15.222222222222222222)
@@ -44,7 +44,7 @@ contract LinearFormulaV2Test is Test {
         depositAmount = WAD * 154;
 
         purchaseReturn =
-            harness.calculateLinearPurchasev2(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
+            harness.calculateLinearV2PurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         // Gas 14272!!!
         // Purchase Return 422829787234042553191 (422.829787234042553191)
@@ -52,7 +52,7 @@ contract LinearFormulaV2Test is Test {
         depositAmount = WAD * 89604;
 
         purchaseReturn =
-            harness.calculateLinearPurchasev2(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
+            harness.calculateLinearV2PurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("purchaseReturnV2 2: ", purchaseReturn);
     }
