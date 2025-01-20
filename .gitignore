@@ -11,3 +11,4 @@ out/
 
 # development files
 src/dev
+test/dev

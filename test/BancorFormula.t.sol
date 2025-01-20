@@ -16,11 +16,21 @@ contract BancorFormulaTest is Test {
     uint8 constant MIN_PRECISION = 32;
     uint8 constant MAX_PRECISION = 127;
     uint8 constant ONE = 1;
+    uint256 constant WAD = 10 ** 18;
 
     error BancorFormula__InvalidInput();
 
     function setUp() public {
         harness = new BancorFormulaHarness();
+    }
+
+    function test_calculateComparisonPurchaseReturn() public view {
+        uint256 supply = 10 * WAD;
+        uint256 reserveBalance = 1 * WAD;
+        uint32 reserveRatio = 500000;
+        uint256 amount = 150 * WAD;
+        uint256 purchaseReturn = harness.calculatePurchaseReturn(supply, reserveBalance, reserveRatio, amount);
+        console.log("purchaseReturn: ", purchaseReturn);
     }
 
     function test_Revert_CalculatePurchaseReturn() public {
