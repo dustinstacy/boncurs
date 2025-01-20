@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {LinearFormula} from "./LinearFormula.sol";
+import {console} from "forge-std/console.sol";
 
 contract LinearFormulaV2 is LinearFormula {
     // Max reserve ratio in parts per million
@@ -18,25 +19,26 @@ contract LinearFormulaV2 is LinearFormula {
         uint256 _depositAmount
     ) internal pure returns (uint256 purchaseReturn) {
         uint256 remainingDeposit = _depositAmount;
-
         // Determine the current token threshold
         uint256 currentToken = (_supply / WAD) + 1;
         uint256 currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
-
         // Determine the current token balance
         uint256 currentTokenBalance = _totalCostOfTokens(currentToken, _scalingFactor, _initialPrice) - _reserveBalance;
+        uint256 currentFragment;
 
         if (remainingDeposit <= currentTokenBalance) {
-            return ((remainingDeposit * WAD) / currentTokenCost);
+            currentFragment = remainingDeposit * WAD / currentTokenCost;
+            remainingDeposit = 0;
+            return currentFragment;
         }
 
         remainingDeposit -= currentTokenBalance;
         purchaseReturn += currentTokenBalance * WAD / currentTokenCost;
         currentToken++;
+        currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
+
+        uint256 tokensToBuy = calculateTokenCount(_depositAmount, _reserveBalance, _initialPrice, currentToken);
         uint256 newReserveBalance = _reserveBalance + currentTokenBalance;
-
-        uint256 tokensToBuy = calculateTokenCount(_depositAmount, _reserveBalance, currentToken);
-
         uint256 tokensToBuyCost =
             _totalCostOfTokens(currentToken + tokensToBuy - 1, _scalingFactor, _initialPrice) - newReserveBalance;
 
@@ -46,16 +48,18 @@ contract LinearFormulaV2 is LinearFormula {
         if (remainingDeposit > 0) {
             currentToken += tokensToBuy;
             currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
-            while (remainingDeposit > currentTokenCost) {
+            while (remainingDeposit >= currentTokenCost) {
                 remainingDeposit -= currentTokenCost;
                 purchaseReturn += WAD;
                 currentToken++;
                 currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
             }
 
-            if (remainingDeposit > 0) {
+            if (remainingDeposit < currentTokenCost && remainingDeposit > 0) {
                 purchaseReturn += remainingDeposit * WAD / currentTokenCost;
             }
+
+            remainingDeposit = 0;
         }
 
         return purchaseReturn;
@@ -69,13 +73,14 @@ contract LinearFormulaV2 is LinearFormula {
         uint256 _sellAmount
     ) internal pure returns (uint256 saleReturn) {}
 
-    function calculateTokenCount(uint256 deposit, uint256 reserve, uint256 currentToken)
-        internal
-        pure
-        returns (uint256 tokenThreshold)
-    {
+    function calculateTokenCount(
+        uint256 _depositAmount,
+        uint256 _reserveBalance,
+        uint256 _initialPrice,
+        uint256 _currentToken
+    ) internal pure returns (uint256 tokenThreshold) {
         // Calculate the value inside the square root
-        uint256 term = (WAD + 2 * (deposit + reserve)) / WAD;
+        uint256 term = (2 * (_depositAmount + _reserveBalance) + WAD) / _initialPrice;
         uint256 sqrtTerm;
 
         // Take the square root
@@ -85,7 +90,7 @@ contract LinearFormulaV2 is LinearFormula {
             sqrtTerm = generalSqrt(term);
         }
 
-        tokenThreshold = sqrtTerm - currentToken;
+        tokenThreshold = sqrtTerm - _currentToken;
     }
 
     // as proposed in EIP-7054
@@ -142,7 +147,8 @@ contract LinearFormulaV2 is LinearFormula {
                 x = (y / x + x) / 2;
             }
         } else if (y != 0) {
-            z = 1;
+            // instead of returning 1, we add 1 to account for the current token when returning a root value less than 2;
+            z = 2;
         }
     }
 }

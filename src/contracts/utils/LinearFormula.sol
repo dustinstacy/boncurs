@@ -18,43 +18,40 @@ abstract contract LinearFormula {
         uint256 _depositAmount
     ) internal pure returns (uint256 purchaseReturn) {
         uint256 remainingDeposit = _depositAmount;
-
         // Determine the current token threshold
         uint256 currentToken = (_supply / WAD) + 1;
         uint256 currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
-
         // Determine the current token balance
+
         uint256 currentTokenBalance = _totalCostOfTokens(currentToken, _scalingFactor, _initialPrice) - _reserveBalance;
+        uint256 currentFragment;
 
         if (remainingDeposit <= currentTokenBalance) {
-            return ((remainingDeposit * WAD) / currentTokenCost);
+            currentFragment = remainingDeposit * WAD / currentTokenCost;
+            remainingDeposit = 0;
+            return currentFragment;
         }
 
         remainingDeposit -= currentTokenBalance;
-        purchaseReturn += currentTokenBalance * WAD / currentTokenCost;
         uint256 previousTokenCost = currentTokenCost;
+        purchaseReturn += currentTokenBalance * WAD / currentTokenCost;
         currentToken++;
         currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
 
         while (remainingDeposit >= currentTokenCost && currentTokenCost != previousTokenCost) {
             remainingDeposit -= currentTokenCost;
-            ("remainingDeposit: ", remainingDeposit);
-            purchaseReturn += WAD;
-            ("purchaseReturn: ", purchaseReturn);
             previousTokenCost = currentTokenCost;
-            ("previousTokenCost: ", previousTokenCost);
             currentToken++;
-            ("currentToken: ", currentToken);
             currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
+            purchaseReturn += WAD;
         }
 
         if (remainingDeposit > 0) {
-            ("remainingDeposit: ", remainingDeposit);
-            purchaseReturn += remainingDeposit * WAD / currentTokenCost;
-            ("purchaseReturn: ", purchaseReturn);
+            currentFragment = remainingDeposit * WAD / currentTokenCost;
+            remainingDeposit = 0;
+            purchaseReturn += currentFragment;
         }
 
-        ("purchaseReturn: ", purchaseReturn);
         return purchaseReturn;
     }
 
