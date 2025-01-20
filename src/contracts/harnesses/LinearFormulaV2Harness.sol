@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {LinearFormulaV2} from "../utils/LinearFormulaV2.sol";
 
 contract LinearFormulaV2Harness is LinearFormulaV2 {
-    function calculateLinearV2PurchaseReturn(
+    function calculatePurchaseReturn(
         uint256 _supply,
         uint256 _reserveBalance,
         uint256 _initialPrice,
@@ -15,7 +15,7 @@ contract LinearFormulaV2Harness is LinearFormulaV2 {
             _calculateLinearV2PurchaseReturn(_supply, _reserveBalance, _initialPrice, _scalingFactor, _depositAmount);
     }
 
-    function calculateLinearV2SaleReturn(
+    function calculateSaleReturn(
         uint256 _supply,
         uint256 _reserveBalance,
         uint256 _initialReserve,
