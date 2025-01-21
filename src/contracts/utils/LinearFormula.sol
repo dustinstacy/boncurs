@@ -61,7 +61,10 @@ abstract contract LinearFormula {
         uint32 _scalingFactor,
         uint256 _sellAmount
     ) internal pure returns (uint256 saleReturn) {
-        uint256 remainingSellAmount = _sellAmount;
+        if (_sellAmount == _supply) {
+            return _reserveBalance;
+        }
+
         uint256 precision;
         if (_sellAmount >= WAD * 1000) {
             precision = 100000;
@@ -70,6 +73,8 @@ abstract contract LinearFormula {
         } else {
             precision = 100;
         }
+
+        uint256 remainingSellAmount = _sellAmount;
 
         // Determine the current token threshold
         uint256 currentToken = (_supply / WAD) + 1;
