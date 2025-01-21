@@ -71,7 +71,56 @@ contract LinearFormulaV2 is LinearFormula {
         uint256 _initialPrice,
         uint32 _scalingFactor,
         uint256 _sellAmount
-    ) internal pure returns (uint256 saleReturn) {}
+    ) internal pure returns (uint256 saleReturn) {
+        if (_sellAmount == _supply) {
+            return _reserveBalance;
+        }
+
+        uint256 precision;
+        if (_sellAmount >= WAD * 1000) {
+            precision = 100000;
+        } else if (_sellAmount >= WAD * 100) {
+            precision = 10000;
+        } else {
+            precision = 100;
+        }
+
+        uint256 remainingSellAmount = _sellAmount;
+        uint256 currentToken = (_supply / WAD) + 1;
+        uint256 currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
+        uint256 currentTokenBalance = _totalCostOfTokens(currentToken, _scalingFactor, _initialPrice) - _reserveBalance;
+        uint256 currentFragment = WAD - (currentTokenBalance * WAD / currentTokenCost);
+
+        if (remainingSellAmount <= currentFragment) {
+            saleReturn += remainingSellAmount * currentTokenCost / WAD;
+            saleReturn = ((saleReturn * WAD / WAD) / precision) * precision;
+            remainingSellAmount = 0;
+            return saleReturn;
+        }
+
+        remainingSellAmount -= currentFragment;
+        saleReturn += currentFragment * currentTokenCost / WAD;
+        currentToken--;
+
+        if (remainingSellAmount >= WAD) {
+            uint256 tokensToSell = remainingSellAmount / WAD;
+            uint256 tokenSellValue = _totalCostOfTokens(currentToken, _scalingFactor, _initialPrice)
+                - _totalCostOfTokens(currentToken - tokensToSell, _scalingFactor, _initialPrice);
+            saleReturn += tokenSellValue;
+            remainingSellAmount -= tokensToSell * WAD;
+
+            if (remainingSellAmount > 0) {
+                currentToken -= tokensToSell;
+                currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
+                saleReturn += (remainingSellAmount * currentTokenCost) / WAD;
+            }
+
+            remainingSellAmount = 0;
+        }
+
+        saleReturn = ((saleReturn * WAD / precision) / WAD) * precision;
+        return saleReturn;
+    }
 
     function calculateTokenCount(
         uint256 _depositAmount,
