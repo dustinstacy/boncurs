@@ -12,7 +12,7 @@ contract LinearFormulaTest is Test {
         harness = new LinearFormulaHarness();
     }
 
-    function test_disc1() public view {
+    function test_disc1_V1() public view {
         // gas: 10256
         // current token: 1
         // purchaseReturn: 1000000000000000000 (1)
@@ -26,9 +26,21 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertEq(saleReturn, depositAmount);
     }
 
-    function test_disc2() public view {
+    function test_disc2_V1() public view {
         // gas: 10548
         // current token: 985
         // purchaseReturn: 907614213197969543 (.907614213197969543)
@@ -42,9 +54,21 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 
-    function test_disc3() public view {
+    function test_disc3_V1() public view {
         // gas: 20030
         // current token: 18
         // purchaseReturn: 15222222222222222222 (15.222222222222222222)
@@ -58,9 +82,21 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 
-    function test_disc4() public view {
+    function test_disc4_V1() public view {
         // gas: 257035
         // current token: 399
         // purchaseReturn: 396588972431077694235 (396.588972431077694235)
@@ -74,9 +110,21 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 
-    function test_disc5() public view {
+    function test_disc5_V1() public view {
         // gas: 27519895
         // current token: 44230
         // purchaseReturn: 44227923016052453086140 (44227.92301605245308614)
@@ -90,9 +138,21 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 
-    function test_disc6() public view {
+    function test_disc6_V1() public view {
         // gas: 14477
         // current token: 422
         // purchaseReturn: 6081358609794628751 (6.081358609794628751)
@@ -106,9 +166,21 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 
-    function test_disc7() public view {
+    function test_disc7_V1() public view {
         // gas: 13986
         // current token: 2
         // purchaseReturn: 1500000000000000000 (1.5)
@@ -125,9 +197,21 @@ contract LinearFormulaTest is Test {
 
         // Price of the current token is 1/2 WAD and the next token is 1 WAD
         assertEq(purchaseReturn, 1.5e18);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 
-    function test_disc8() public view {
+    function test_disc8_V1() public view {
         // gas: 11024
         // current token: 2
         // purchaseReturn: 1891207568169170840 (1.89120756816917084)
@@ -141,9 +225,21 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 
-    function test_disc9() public view {
+    function test_disc9_V1() public view {
         // gas: 10214
         // current token: 490
         // purchaseReturn: 5678398237425187 (.005678398237425187)
@@ -157,5 +253,17 @@ contract LinearFormulaTest is Test {
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
         console.log("v1 purchase return: ", purchaseReturn);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        console.log("deposit amount: ", depositAmount);
+        console.log("v1 sale return: ", saleReturn);
+
+        assertApproxEqAbs(saleReturn, depositAmount, 1e3);
     }
 }
