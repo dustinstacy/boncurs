@@ -1,17 +1,14 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {LinearFormula} from "./LinearFormula.sol";
-import {console} from "forge-std/console.sol";
-
-contract LinearFormulaV2 is LinearFormula {
+abstract contract LinFormula {
     // Max reserve ratio in parts per million
     uint32 private constant MAX_SCALE = 100000000; // 10000%
     uint32 private constant PURE_LINEAR_SCALE = 1000000; // 100%
     // 1 ether
     uint256 private constant WAD = 10 ** 18;
 
-    function _calculateLinearV2PurchaseReturn(
+    function _calculateLinPurchaseReturn(
         uint256 _supply,
         uint256 _reserveBalance,
         uint256 _initialPrice,
@@ -37,7 +34,7 @@ contract LinearFormulaV2 is LinearFormula {
         currentToken++;
         currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
 
-        uint256 tokensToBuy = calculateTokenCount(_depositAmount, _reserveBalance, _initialPrice, currentToken);
+        uint256 tokensToBuy = _calculateTokenCount(_depositAmount, _reserveBalance, _initialPrice, currentToken);
         uint256 newReserveBalance = _reserveBalance + currentTokenBalance;
         uint256 tokensToBuyCost =
             _totalCostOfTokens(currentToken + tokensToBuy - 1, _scalingFactor, _initialPrice) - newReserveBalance;
@@ -65,7 +62,7 @@ contract LinearFormulaV2 is LinearFormula {
         return purchaseReturn;
     }
 
-    function _calculateLinearV2SaleReturn(
+    function _calculateLinSaleReturn(
         uint256 _supply,
         uint256 _reserveBalance,
         uint256 _initialPrice,
@@ -122,7 +119,23 @@ contract LinearFormulaV2 is LinearFormula {
         return saleReturn;
     }
 
-    function calculateTokenCount(
+    function _totalCostOfTokens(uint256 _currentToken, uint256 _scalingFactor, uint256 _initialPrice)
+        internal
+        pure
+        returns (uint256)
+    {
+        return ((_currentToken * (_currentToken + 1) * _initialPrice) * _scalingFactor / 2) / PURE_LINEAR_SCALE;
+    }
+
+    function _currentTokenCost(uint256 _currentToken, uint256 _scalingFactor, uint256 _initialPrice)
+        internal
+        pure
+        returns (uint256 currentTokenCost)
+    {
+        return _initialPrice * _currentToken * _scalingFactor / PURE_LINEAR_SCALE;
+    }
+
+    function _calculateTokenCount(
         uint256 _depositAmount,
         uint256 _reserveBalance,
         uint256 _initialPrice,
@@ -134,16 +147,16 @@ contract LinearFormulaV2 is LinearFormula {
 
         // Take the square root
         if (term < 106) {
-            sqrtTerm = optimalSqrt(term);
+            sqrtTerm = _optimalSqrt(term);
         } else {
-            sqrtTerm = generalSqrt(term);
+            sqrtTerm = _generalSqrt(term);
         }
 
         tokenThreshold = sqrtTerm - _currentToken;
     }
 
     // as proposed in EIP-7054
-    function generalSqrt(uint256 x) internal pure returns (uint128) {
+    function _generalSqrt(uint256 x) internal pure returns (uint128) {
         if (x == 0) {
             return 0;
         } else {
@@ -187,7 +200,7 @@ contract LinearFormulaV2 is LinearFormula {
     }
 
     // Basic Bablyonian method
-    function optimalSqrt(uint256 y) public pure returns (uint256 z) {
+    function _optimalSqrt(uint256 y) internal pure returns (uint256 z) {
         if (y > 3) {
             z = y;
             uint256 x = y / 2 + 1;

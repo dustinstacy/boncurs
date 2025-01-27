@@ -2,14 +2,14 @@
 pragma solidity ^0.8.28;
 
 import {Test, console} from "forge-std/Test.sol";
-import {LinearFormulaV2Harness} from "src/contracts/harnesses/LinearFormulaV2Harness.sol";
+import {LinFormulaHarness} from "src/contracts/harnesses/LinFormulaHarness.sol";
 
-contract LinearFormulaV2Test is Test {
-    LinearFormulaV2Harness public harness;
+contract LinFormulaTest is Test {
+    LinFormulaHarness public harness;
     uint256 public constant WAD = 10 ** 18;
 
     function setUp() public {
-        harness = new LinearFormulaV2Harness();
+        harness = new LinFormulaHarness();
     }
 
     function test_disc1_V2() public view {
