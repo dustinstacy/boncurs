@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BancorFormula} from "src/contracts/utils/BancorFormula.sol";
+import {BancorFormula} from "../utils/BancorFormula.sol";
 
 contract BancorFormulaHarness is BancorFormula {
     function calculatePurchaseReturn(

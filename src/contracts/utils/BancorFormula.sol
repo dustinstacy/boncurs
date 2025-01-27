@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {console} from "forge-std/console.sol";
-
 /// @notice Updated version of the BancorFormula contract from the Bancor Protocol
 /// @notice Editted to be compatible with Solidity 0.8.28
 /// @dev Changes made:
