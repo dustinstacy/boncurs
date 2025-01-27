@@ -39,10 +39,7 @@ abstract contract LinFormula {
         uint256 _depositAmount
     ) internal pure returns (uint256 purchaseReturn) {
         // Validate input
-        if (
-            _supply == 0 || _reserveBalance == 0 || _initialPrice == 0 || _scalingFactor == 0
-                || _scalingFactor > MAX_SCALE
-        ) {
+        if (_initialPrice == 0 || _scalingFactor == 0 || _scalingFactor > MAX_SCALE) {
             revert LinFormula__InvalidInput();
         }
 
@@ -136,10 +133,7 @@ abstract contract LinFormula {
         uint256 _sellAmount
     ) internal pure returns (uint256 saleReturn) {
         // Validate input
-        if (
-            _supply == 0 || _reserveBalance == 0 || _initialPrice == 0 || _scalingFactor == 0
-                || _scalingFactor > MAX_SCALE
-        ) {
+        if (_initialPrice == 0 || _scalingFactor == 0 || _scalingFactor > MAX_SCALE) {
             revert LinFormula__InvalidInput();
         }
 
@@ -217,7 +211,7 @@ abstract contract LinFormula {
      *
      * @return totalCostOfTokens The total cost of tokens up to the current token
      */
-    function _totalCostOfTokens(uint256 _currentToken, uint256 _scalingFactor, uint256 _initialPrice)
+    function _totalCostOfTokens(uint256 _currentToken, uint32 _scalingFactor, uint256 _initialPrice)
         internal
         pure
         returns (uint256)
@@ -234,7 +228,7 @@ abstract contract LinFormula {
      *
      * @return currentTokenCost The current token cost
      */
-    function _currentTokenCost(uint256 _currentToken, uint256 _scalingFactor, uint256 _initialPrice)
+    function _currentTokenCost(uint256 _currentToken, uint32 _scalingFactor, uint256 _initialPrice)
         internal
         pure
         returns (uint256 currentTokenCost)

@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {LinFormula} from "../utils/LinFormula.sol";
 
+/// @notice Used only for testing the LinFormula contract
 contract LinFormulaHarness is LinFormula {
     function calculatePurchaseReturn(
         uint256 _supply,
