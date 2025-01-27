@@ -1,39 +1,48 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {BancorFormulaHarness} from "src/contracts/harnesses/BancorFormulaHarness.sol";
 
+///@notice Tests to ensure all functions in BancorFormula are working as expected after updates
 contract BancorFormulaTest is Test {
     BancorFormulaHarness public harness;
 
-    uint256 constant OPT_LOG_MAX_VAL = 0x15bf0a8b1457695355fb8ac404e7a79e3;
-    uint256 constant OPT_EXP_MAX_VAL = 0x800000000000000000000000000000000;
-    uint256 constant FIXED_1 = 0x080000000000000000000000000000000;
-    uint256 constant MAX_NUM = 0x200000000000000000000000000000000;
-    uint256 constant MAX_EXP_ARRAY_VALUE = 0x1c35fedd14ffffffffffffffffffffffff;
+    // Constants from BancorFormula.sol
+    uint8 constant ONE = 1; // adjusted to uint8 for reusability
     uint32 constant MAX_RATIO = 1000000;
     uint8 constant MIN_PRECISION = 32;
     uint8 constant MAX_PRECISION = 127;
-    uint8 constant ONE = 1;
+    uint256 constant FIXED_1 = 0x080000000000000000000000000000000;
+    uint256 constant FIXED_2 = 0x100000000000000000000000000000000;
+    uint256 constant MAX_NUM = 0x200000000000000000000000000000000;
+    uint256 constant LN2_NUMERATOR = 0x3f80fe03f80fe03f80fe03f80fe03f8;
+    uint256 constant LN2_DENOMINATOR = 0x5b9de1d10bf4103d647b0955897ba80;
+    uint256 constant OPT_LOG_MAX_VAL = 0x15bf0a8b1457695355fb8ac404e7a79e3;
+    uint256 constant OPT_EXP_MAX_VAL = 0x800000000000000000000000000000000;
+
+    // Constants added for testing
+    uint256 constant MAX_EXP_ARRAY_VALUE = 0x1c35fedd14ffffffffffffffffffffffff;
     uint256 constant WAD = 10 ** 18;
 
+    // Custom errors
     error BancorFormula__InvalidInput();
 
     function setUp() public {
         harness = new BancorFormulaHarness();
     }
 
-    function test_calculateComparisonPurchaseReturn() public view {
-        uint256 supply = 10 * WAD;
-        uint256 reserveBalance = 1 * WAD;
+    function test_calculatePurchaseReturn() public view {
+        uint256 supply = WAD;
+        uint256 reserveBalance = WAD;
         uint32 reserveRatio = 500000;
-        uint256 amount = 150 * WAD;
+        uint256 amount = 3 * WAD;
         uint256 purchaseReturn = harness.calculatePurchaseReturn(supply, reserveBalance, reserveRatio, amount);
-        console.log("purchaseReturn: ", purchaseReturn);
+
+        assertApproxEqAbs(purchaseReturn, WAD, 1);
     }
 
-    function test_Revert_CalculatePurchaseReturn() public {
+    function test_RevertIf_InvalidCalculatePurchaseReturnInput() public {
         vm.expectRevert(BancorFormula__InvalidInput.selector);
         harness.calculatePurchaseReturn(0, ONE, ONE, 0);
 
@@ -43,7 +52,6 @@ contract BancorFormulaTest is Test {
         vm.expectRevert(BancorFormula__InvalidInput.selector);
         harness.calculatePurchaseReturn(ONE, ONE, 0, 0);
 
-        console.log("here");
         vm.expectRevert(BancorFormula__InvalidInput.selector);
         harness.calculatePurchaseReturn(ONE, ONE, MAX_RATIO + 1, 0);
     }
@@ -68,7 +76,7 @@ contract BancorFormulaTest is Test {
         assertEq(result, (supply * depositAmount) / reserveBalance);
     }
 
-    function test_RevertCalculateSaleReturn() public {
+    function test_RevertIf_InvalidCalculateSaleReturnInput() public {
         vm.expectRevert(BancorFormula__InvalidInput.selector);
         harness.calculateSaleReturn(0, ONE, ONE, 0);
 
@@ -115,6 +123,7 @@ contract BancorFormulaTest is Test {
         assertEq(result, (reserveBalance * sellAmount) / supply);
     }
 
+    // Testing to ensure reasonable range of bounds are not failing either due to overflow or underflow
     function test_CalculatePurchaseReturn() public view {
         // sanity check
         uint256 reasonableSupply = 1e24; // 1,000,000 Ether
@@ -152,6 +161,7 @@ contract BancorFormulaTest is Test {
         );
     }
 
+    // Testing to ensure reasonable range of bounds are not failing either due to overflow or underflow
     function test_CalculateSaleReturn() public view {
         // sanity check
         uint256 reasonableSupply = 1e24; // 1,000,000 Ether
@@ -190,12 +200,12 @@ contract BancorFormulaTest is Test {
     }
 
     // Internal view functions not fuzz tested
-
     function test_RevertPower() public {
         vm.expectRevert(BancorFormula__InvalidInput.selector);
         harness.power_Harness(MAX_NUM, ONE, ONE, ONE);
     }
 
+    // Testing to ensure reasonable range of bounds are not failing either due to overflow or underflow
     function test_power() public view {
         // Power function seems to be expecting reasonable inputs
         // Highly varied inputs here will lead to error in the _findPositionInMaxExpArray function
@@ -228,7 +238,6 @@ contract BancorFormulaTest is Test {
     }
 
     // Internal view functions fuzz tested with appropriate bounds
-
     function test_findPositionInMaxExpArray(uint256 x) public view {
         uint256 lowerBound = OPT_EXP_MAX_VAL + 1;
         uint256 upperBound = MAX_EXP_ARRAY_VALUE;
@@ -240,7 +249,6 @@ contract BancorFormulaTest is Test {
     }
 
     // Internal pure Functions fuzz tested with appropriate bounds
-
     function test_generalLog(uint256 x) public view {
         uint256 lowerBound = OPT_LOG_MAX_VAL;
         vm.assume(x > lowerBound);

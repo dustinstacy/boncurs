@@ -2,21 +2,8 @@
 pragma solidity ^0.8.28;
 
 /// @notice Updated version of the BancorFormula contract from the Bancor Protocol
-/// @notice Editted to be compatible with Solidity 0.8.28
-/// @dev Changes made:
-/// - Changed compilier to Solidity 0.8.28
-/// - Changed to an abstract contract
-/// - Removed Utils import
-/// - Removed safe math functions
-/// - Removed version variable
-/// - Removed calculateCrossConnectorReturn()
-/// - Removed require statements in favor of custom errors
-/// - Added comments for clarity
-/// - Added named return values
-/// - Added break in _generalLog() function for loop
-/// - Updated some parameter names to be more descriptive
-/// - Added leading _ to internal function names
-/// - Reordered internal functions to group view and pure
+///         Editted to be compatible with Solidity 0.8.28
+///         See README.md for detailed changes
 abstract contract BancorFormula {
     uint256 private constant ONE = 1;
     // Max reserve ratio in parts per million
@@ -26,25 +13,29 @@ abstract contract BancorFormula {
     // Maximum precision index in the maxExpArray
     uint8 private constant MAX_PRECISION = 127;
 
-    /// @dev The following values are used for precision in the fixed point arithmetic.
+    /// @dev The following values are used for precision in the contract's fixed point arithmetic.
     /// @dev Powers of 2 are computationally efficient because shifting left or right by X is the same as multiplying or dividing by 2^X
     uint256 private constant FIXED_1 = 0x080000000000000000000000000000000; // 2^127 or 1.7014e38
     uint256 private constant FIXED_2 = 0x100000000000000000000000000000000; // 2^128 or 3.4028e38
     /// @dev Value is capped to prevent overflow
     uint256 private constant MAX_NUM = 0x200000000000000000000000000000000; // 2^129 or 6.8056e38
 
+    /// @dev Used to convert from base 2 to natural logarithm
     uint256 private constant LN2_NUMERATOR = 0x3f80fe03f80fe03f80fe03f80fe03f8;
     uint256 private constant LN2_DENOMINATOR = 0x5b9de1d10bf4103d647b0955897ba80;
 
-    /// @dev Values that represent the point at which the optimal function approximation is still effective
+    /// @dev Values that represent the point at which the optimal function approximations are still effective
     uint256 private constant OPT_LOG_MAX_VAL = 0x15bf0a8b1457695355fb8ac404e7a79e3;
     uint256 private constant OPT_EXP_MAX_VAL = 0x800000000000000000000000000000000;
 
     /// @dev The array of values used to find the precision needed for the given input
     uint256[128] private maxExpArray;
 
+    // Custom error messages
     error BancorFormula__InvalidInput();
 
+    /// @dev Since maxExpArray is a fixed-size array, we need to initialize it in the constructor
+    ///      To expand the array at the cost of higher gas fees, uncomment the following lines
     constructor() {
         //  maxExpArray[  0] = 0x6bffffffffffffffffffffffffffffffff;
         //  maxExpArray[  1] = 0x67ffffffffffffffffffffffffffffffff;
@@ -211,7 +202,9 @@ abstract contract BancorFormula {
             return (_supply * _depositAmount) / _reserveBalance;
         }
 
+        // Calculate the new reserve balance after the deposit
         uint256 newReserveBalance = (_depositAmount + _reserveBalance);
+        // Calculate the result of the expression (1 + _depositAmount / _reserveBalance) ^ (_reserveRatio / 1000000)
         (uint256 result, uint256 precision) = _power(newReserveBalance, _reserveBalance, _reserveRatio, MAX_RATIO);
         // Calculate new supply after the deposit and bit shift it to the right by the precision
         uint256 temp = (_supply * result) >> precision;
@@ -262,11 +255,13 @@ abstract contract BancorFormula {
             return (_reserveBalance * _sellAmount) / _supply;
         }
 
+        // Calculate the new supply after the sale
         uint256 newSupply = _supply - _sellAmount;
+        // Calculate the result of the expression (1 - _sellAmount / _supply) ^ (1 / (_reserveRatio / 1000000))
         (uint256 result, uint256 precision) = _power(_supply, newSupply, MAX_RATIO, _reserveRatio);
         // Scale current reserve balance by the result
         uint256 temp1 = (_reserveBalance * result);
-        // Bit-shift the non scaled reserve balance by the precision for compatibility
+        // Bit-shift the non-scaled reserve balance by the precision for compatibility
         uint256 temp2 = _reserveBalance << precision;
         // Return the difference between the two values divided by the result
         return (temp1 - temp2) / result;
@@ -302,14 +297,15 @@ abstract contract BancorFormula {
         view
         returns (uint256 result, uint8 precision)
     {
+        // Ensure MAX_NUM is not exceeded
         if (_baseN >= MAX_NUM) {
             revert BancorFormula__InvalidInput();
         }
 
-        uint256 baseLog;
         // Scaled ratio of the two bases
         uint256 base = _baseN * FIXED_1 / _baseD;
 
+        uint256 baseLog;
         // If the base is less than the optimal value, we can use the optimal function for the logarithm
         // This is computationally more efficient
         if (base < OPT_LOG_MAX_VAL) {
@@ -345,6 +341,7 @@ abstract contract BancorFormula {
         uint8 lo = MIN_PRECISION;
         uint8 hi = MAX_PRECISION;
 
+        // Binary search
         while (lo + 1 < hi) {
             uint8 mid = (lo + hi) / 2;
             if (maxExpArray[mid] >= _x) {
@@ -354,6 +351,7 @@ abstract contract BancorFormula {
             }
         }
 
+        // Return the highest position of a value in maxExpArray that is greater than or equal to the input
         if (maxExpArray[hi] >= _x) {
             return hi;
         }
@@ -361,6 +359,7 @@ abstract contract BancorFormula {
             return lo;
         }
 
+        // This should never be the case
         require(false);
         return 0;
     }
@@ -393,9 +392,6 @@ abstract contract BancorFormula {
                     x >>= 1; // now 1 < x < 2
                     // Add the fraction part of the logarithm to the corresponding bit(i) of the result
                     result += ONE << (i - 1);
-                } else {
-                    // Exit the loop if x is now less than FIXED_2
-                    break;
                 }
             }
         }
@@ -448,9 +444,9 @@ abstract contract BancorFormula {
     function _generalExp(uint256 _x, uint8 _precision) internal pure returns (uint256 result) {
         uint256 xi = _x;
 
+        // Iterate through the Maclaurin series to increase accuracy
         // Continually preserve precision to avoid overflow
         xi = (xi * _x) >> _precision;
-        // Iterate through the Maclaurin series to increase accuracy
         result += xi * 0x3442c4e6074a82f1797f72ac0000000; // add x^02 * (33! / 02!)
         xi = (xi * _x) >> _precision;
         result += xi * 0x116b96f757c380fb287fd0e40000000; // add x^03 * (33! / 03!)

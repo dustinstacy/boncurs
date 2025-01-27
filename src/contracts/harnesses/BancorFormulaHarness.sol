@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {BancorFormula} from "../utils/BancorFormula.sol";
 
+/// @notice Used only for testing the BancorFormula contract
 contract BancorFormulaHarness is BancorFormula {
     function calculatePurchaseReturn(
         uint256 _supply,
