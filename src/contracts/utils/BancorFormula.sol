@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @notice Updated version of the BancorFormula contract from the Bancor Protocol
-///         Editted to be compatible with Solidity 0.8.28
+///         Editted with personal preferences and to be compatible with Solidity 0.8.28
 ///         See README.md for detailed changes
 abstract contract BancorFormula {
     uint256 private constant ONE = 1;
@@ -172,44 +172,44 @@ abstract contract BancorFormula {
      *     calculates the return for a given conversion (in the main token)
      *
      *     Formula:
-     *     Return = _supply * ((1 + _depositAmount / _reserveBalance) ^ (_reserveRatio / 1000000) - 1)
+     *     Return = supply * ((1 + depositAmount / reserveBalance) ^ (reserveRatio / 1000000) - 1)
      *
-     *     @param _supply            token total supply
-     *     @param _reserveBalance    total reserve balance
-     *     @param _reserveRatio      reserve ratio, represented in ppm, 1-1000000
-     *     @param _depositAmount     deposit amount, in reserve token
+     *     @param supply            token total supply
+     *     @param reserveBalance    total reserve balance
+     *     @param reserveRatio      reserve ratio, represented in ppm, 1-1000000
+     *     @param depositAmount     deposit amount, in reserve token
      *
      *     @return purchaseReturn return amount
      */
     function _calculateBancorFormulaPurchaseReturn(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint32 _reserveRatio,
-        uint256 _depositAmount
+        uint256 supply,
+        uint256 reserveBalance,
+        uint32 reserveRatio,
+        uint256 depositAmount
     ) internal view returns (uint256 purchaseReturn) {
         // validate input
-        if (_supply == 0 || _reserveBalance == 0 || _reserveRatio == 0 || _reserveRatio > MAX_RATIO) {
+        if (supply == 0 || reserveBalance == 0 || reserveRatio == 0 || reserveRatio > MAX_RATIO) {
             revert BancorFormula__InvalidInput();
         }
 
         // special case for 0 deposit amount
-        if (_depositAmount == 0) {
+        if (depositAmount == 0) {
             return 0;
         }
 
         // special case if the ratio = 100%
-        if (_reserveRatio == MAX_RATIO) {
-            return (_supply * _depositAmount) / _reserveBalance;
+        if (reserveRatio == MAX_RATIO) {
+            return (supply * depositAmount) / reserveBalance;
         }
 
         // Calculate the new reserve balance after the deposit
-        uint256 newReserveBalance = (_depositAmount + _reserveBalance);
-        // Calculate the result of the expression (1 + _depositAmount / _reserveBalance) ^ (_reserveRatio / 1000000)
-        (uint256 result, uint256 precision) = _power(newReserveBalance, _reserveBalance, _reserveRatio, MAX_RATIO);
+        uint256 newReserveBalance = (depositAmount + reserveBalance);
+        // Calculate the result of the expression (1 + depositAmount / reserveBalance) ^ (reserveRatio / 1000000)
+        (uint256 result, uint256 precision) = _power(newReserveBalance, reserveBalance, reserveRatio, MAX_RATIO);
         // Calculate new supply after the deposit and bit shift it to the right by the precision
-        uint256 temp = (_supply * result) >> precision;
+        uint256 temp = (supply * result) >> precision;
         // Return the difference between the new supply and the old supply to get the purchase return
-        return temp - _supply;
+        return temp - supply;
     }
 
     /**
@@ -217,52 +217,50 @@ abstract contract BancorFormula {
      *     calculates the return for a given conversion (in the reserve token)
      *
      *     Formula:
-     *     Return = _reserveBalance * (1 - (1 - _sellAmount / _supply) ^ (1 / (_reserveRatio / 1000000)))
+     *     Return = reserveBalance * (1 - (1 - sellAmount / supply) ^ (1 / (reserveRatio / 1000000)))
      *
-     *     @param _supply            token total supply
-     *     @param _reserveBalance    total reserve
-     *     @param _reserveRatio      constant reserve Ratio, represented in ppm, 1-1000000
-     *     @param _sellAmount        sell amount, in the token itself
+     *     @param supply            token total supply
+     *     @param reserveBalance    total reserve
+     *     @param reserveRatio      constant reserve Ratio, represented in ppm, 1-1000000
+     *     @param sellAmount        sell amount, in the token itself
      *
      *     @return saleReturn return amount
      */
     function _calculateBancorFormulaSaleReturn(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint32 _reserveRatio,
-        uint256 _sellAmount
+        uint256 supply,
+        uint256 reserveBalance,
+        uint32 reserveRatio,
+        uint256 sellAmount
     ) internal view returns (uint256 saleReturn) {
         // validate input
-        if (
-            _supply == 0 || _reserveBalance == 0 || _reserveRatio == 0 || _reserveRatio > MAX_RATIO
-                || _sellAmount > _supply
-        ) {
+        if (supply == 0 || reserveBalance == 0 || reserveRatio == 0 || reserveRatio > MAX_RATIO || sellAmount > supply)
+        {
             revert BancorFormula__InvalidInput();
         }
 
         // special case for 0 sell amount
-        if (_sellAmount == 0) {
+        if (sellAmount == 0) {
             return 0;
         }
 
         // special case for selling the entire supply
-        if (_sellAmount == _supply) {
-            return _reserveBalance;
+        if (sellAmount == supply) {
+            return reserveBalance;
         }
 
         // special case if the ratio = 100%
-        if (_reserveRatio == MAX_RATIO) {
-            return (_reserveBalance * _sellAmount) / _supply;
+        if (reserveRatio == MAX_RATIO) {
+            return (reserveBalance * sellAmount) / supply;
         }
 
         // Calculate the new supply after the sale
-        uint256 newSupply = _supply - _sellAmount;
-        // Calculate the result of the expression (1 - _sellAmount / _supply) ^ (1 / (_reserveRatio / 1000000))
-        (uint256 result, uint256 precision) = _power(_supply, newSupply, MAX_RATIO, _reserveRatio);
+        uint256 newSupply = supply - sellAmount;
+        // Calculate the result of the expression (1 - sellAmount / supply) ^ (1 / (reserveRatio / 1000000))
+        (uint256 result, uint256 precision) = _power(supply, newSupply, MAX_RATIO, reserveRatio);
         // Scale current reserve balance by the result
-        uint256 temp1 = (_reserveBalance * result);
+        uint256 temp1 = (reserveBalance * result);
         // Bit-shift the non-scaled reserve balance by the precision for compatibility
-        uint256 temp2 = _reserveBalance << precision;
+        uint256 temp2 = reserveBalance << precision;
         // Return the difference between the two values divided by the result
         return (temp1 - temp2) / result;
     }
@@ -270,7 +268,7 @@ abstract contract BancorFormula {
     /**
      * General Description:
      *         Determine a value of precision.
-     *         Calculate an integer approximation of (_baseN / _baseD) ^ (_expN / _expD) * 2 ^ precision.
+     *         Calculate an integer approximation of (baseN / baseD) ^ (expN / expD) * 2 ^ precision.
      *         Return the result along with the precision used.
      *
      *     Detailed Description:
@@ -282,28 +280,27 @@ abstract contract BancorFormula {
      *         This maximum exponent depends on the "precision" used, and it is given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
      *         Hence we need to determine the highest precision which can be used for the given input, before calling the exponentiation function.
      *         This allows us to compute "base ^ exp" with maximum accuracy and without exceeding 256 bits in any of the intermediate computations.
-     *         This functions assumes that "_expN < 2 ^ 256 / log(MAX_NUM - 1)", otherwise the multiplication should be replaced with a "safeMul".
+     *         This functions assumes that "expN < 2 ^ 256 / log(MAX_NUM - 1)", otherwise the multiplication should be replaced with a "safeMul".
      *
-     *     @param _baseN        base numerator
-     *     @param _baseD        base denominator
-     *     @param _expN         exponent numerator
-     *     @param _expD         exponent denominator
+     *     @param baseN        base numerator
+     *     @param baseD        base denominator
+     *     @param expN         exponent numerator
+     *     @param expD         exponent denominator
      *
      *     @return result       exponentiation result
      *     @return precision    precision used
      */
-    function _power(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD)
+    function _power(uint256 baseN, uint256 baseD, uint32 expN, uint32 expD)
         internal
         view
         returns (uint256 result, uint8 precision)
     {
-        // Ensure MAX_NUM is not exceeded
-        if (_baseN >= MAX_NUM) {
+        if (baseN >= MAX_NUM) {
             revert BancorFormula__InvalidInput();
         }
 
         // Scaled ratio of the two bases
-        uint256 base = _baseN * FIXED_1 / _baseD;
+        uint256 base = baseN * FIXED_1 / baseD;
 
         uint256 baseLog;
         // If the base is less than the optimal value, we can use the optimal function for the logarithm
@@ -315,7 +312,7 @@ abstract contract BancorFormula {
         }
 
         // Scale that baseLog by the ratio of the exponents
-        uint256 baseLogTimesExp = baseLog * _expN / _expD;
+        uint256 baseLogTimesExp = baseLog * expN / expD;
 
         // If the baseLogTimesExp is less than the optimal value, we can use the optimal fuction for the exponentiation
         // This is computationally more efficient
@@ -333,18 +330,18 @@ abstract contract BancorFormula {
      *     - This function finds the position of [the smallest value in "maxExpArray" larger than or equal to "x"]
      *     - This function finds the highest position of [a value in "maxExpArray" larger than or equal to "x"]
      *
-     *      @param _x           input
+     *      @param x           input
      *
      *      @return position    position of the value in the array
      */
-    function _findPositionInMaxExpArray(uint256 _x) internal view returns (uint8 position) {
+    function _findPositionInMaxExpArray(uint256 x) internal view returns (uint8 position) {
         uint8 lo = MIN_PRECISION;
         uint8 hi = MAX_PRECISION;
 
         // Binary search
         while (lo + 1 < hi) {
             uint8 mid = (lo + hi) / 2;
-            if (maxExpArray[mid] >= _x) {
+            if (maxExpArray[mid] >= x) {
                 lo = mid;
             } else {
                 hi = mid;
@@ -352,10 +349,10 @@ abstract contract BancorFormula {
         }
 
         // Return the highest position of a value in maxExpArray that is greater than or equal to the input
-        if (maxExpArray[hi] >= _x) {
+        if (maxExpArray[hi] >= x) {
             return hi;
         }
-        if (maxExpArray[lo] >= _x) {
+        if (maxExpArray[lo] >= x) {
             return lo;
         }
 
@@ -403,24 +400,24 @@ abstract contract BancorFormula {
     /**
      * Compute the largest integer smaller than or equal to the binary logarithm of the input.
      *
-     *      @param _n       input
+     *      @param x       input
      *
      *      @return result  result
      */
-    function _floorLog2(uint256 _n) internal pure returns (uint8 result) {
-        if (_n < 256) {
+    function _floorLog2(uint256 x) internal pure returns (uint8 result) {
+        if (x < 256) {
             // At most 8 iterations
-            while (_n > 1) {
+            while (x > 1) {
                 // Divides n by 2
-                _n >>= 1;
+                x >>= 1;
                 result += 1;
             }
         } else {
             // Exactly 8 iterations
             for (uint8 s = 128; s > 0; s >>= 1) {
                 // If a power of 2 fits in n, set the corresponding bit in result
-                if (_n >= (ONE << s)) {
-                    _n >>= s;
+                if (x >= (ONE << s)) {
+                    x >>= s;
                     result |= s;
                 }
             }
@@ -436,83 +433,83 @@ abstract contract BancorFormula {
      *     The global "maxExpArray" maps each "precision" to "((maximumExponent + 1) << (MAX_PRECISION - precision)) - 1".
      *     The maximum permitted value for "x" is therefore given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
      *
-     *     @param _x           input
-     *     @param _precision   precision
+     *     @param x           input
+     *     @param precision   precision
      *
      *     @return result      result
      */
-    function _generalExp(uint256 _x, uint8 _precision) internal pure returns (uint256 result) {
-        uint256 xi = _x;
+    function _generalExp(uint256 x, uint8 precision) internal pure returns (uint256 result) {
+        uint256 xi = x;
 
         // Iterate through the Maclaurin series to increase accuracy
         // Continually preserve precision to avoid overflow
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x3442c4e6074a82f1797f72ac0000000; // add x^02 * (33! / 02!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x116b96f757c380fb287fd0e40000000; // add x^03 * (33! / 03!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x045ae5bdd5f0e03eca1ff4390000000; // add x^04 * (33! / 04!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00defabf91302cd95b9ffda50000000; // add x^05 * (33! / 05!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x002529ca9832b22439efff9b8000000; // add x^06 * (33! / 06!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00054f1cf12bd04e516b6da88000000; // add x^07 * (33! / 07!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000a9e39e257a09ca2d6db51000000; // add x^08 * (33! / 08!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x000012e066e7b839fa050c309000000; // add x^09 * (33! / 09!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x000001e33d7d926c329a1ad1a800000; // add x^10 * (33! / 10!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000002bee513bdb4a6b19b5f800000; // add x^11 * (33! / 11!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000003a9316fa79b88eccf2a00000; // add x^12 * (33! / 12!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000048177ebe1fa812375200000; // add x^13 * (33! / 13!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000005263fe90242dcbacf00000; // add x^14 * (33! / 14!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x000000000057e22099c030d94100000; // add x^15 * (33! / 15!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000000057e22099c030d9410000; // add x^16 * (33! / 16!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000000000052b6b54569976310000; // add x^17 * (33! / 17!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000000000004985f67696bf748000; // add x^18 * (33! / 18!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x000000000000003dea12ea99e498000; // add x^19 * (33! / 19!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000000000000031880f2214b6e000; // add x^20 * (33! / 20!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x000000000000000025bcff56eb36000; // add x^21 * (33! / 21!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x000000000000000001b722e10ab1000; // add x^22 * (33! / 22!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000000000000001317c70077000; // add x^23 * (33! / 23!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000000000000000000cba84aafa00; // add x^24 * (33! / 24!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000000000000000000082573a0a00; // add x^25 * (33! / 25!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000000000000000000005035ad900; // add x^26 * (33! / 26!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x000000000000000000000002f881b00; // add x^27 * (33! / 27!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000000000000000000001b29340; // add x^28 * (33! / 28!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x00000000000000000000000000efc40; // add x^29 * (33! / 29!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000000000000000000000007fe0; // add x^30 * (33! / 30!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000000000000000000000000420; // add x^31 * (33! / 31!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000000000000000000000000021; // add x^32 * (33! / 32!)
-        xi = (xi * _x) >> _precision;
+        xi = (xi * x) >> precision;
         result += xi * 0x0000000000000000000000000000001; // add x^33 * (33! / 33!)
 
         // Calibrate result to account for series expansion up to 33 terms, initial x multipication, and precision adjustment
-        return result / 0x688589cc0e9505e2f2fee5580000000 + _x + (ONE << _precision); // divide by 33! and then add x^1 / 1! + x^0 / 0!
+        return result / 0x688589cc0e9505e2f2fee5580000000 + x + (ONE << precision); // divide by 33! and then add x^1 / 1! + x^0 / 0!
     }
 
     /**

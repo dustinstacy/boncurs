@@ -5,52 +5,51 @@ import {BancorFormula} from "../utils/BancorFormula.sol";
 
 /// @notice Used only for testing the BancorFormula contract
 contract BancorFormulaHarness is BancorFormula {
-    function calculatePurchaseReturn(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint32 _reserveRatio,
-        uint256 _depositAmount
-    ) external view returns (uint256 purchaseReturn) {
-        purchaseReturn = _calculateBancorFormulaPurchaseReturn(_supply, _reserveBalance, _reserveRatio, _depositAmount);
+    function calculatePurchaseReturn(uint256 supply, uint256 reserveBalance, uint32 reserveRatio, uint256 depositAmount)
+        external
+        view
+        returns (uint256 purchaseReturn)
+    {
+        purchaseReturn = _calculateBancorFormulaPurchaseReturn(supply, reserveBalance, reserveRatio, depositAmount);
     }
 
-    function calculateSaleReturn(uint256 _supply, uint256 _reserveBalance, uint32 _reserveRatio, uint256 _sellAmount)
+    function calculateSaleReturn(uint256 supply, uint256 reserveBalance, uint32 reserveRatio, uint256 sellAmount)
         external
         view
         returns (uint256 saleReturn)
     {
-        saleReturn = _calculateBancorFormulaSaleReturn(_supply, _reserveBalance, _reserveRatio, _sellAmount);
+        saleReturn = _calculateBancorFormulaSaleReturn(supply, reserveBalance, reserveRatio, sellAmount);
     }
 
-    function power_Harness(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD)
+    function powerHarness(uint256 baseN, uint256 baseD, uint32 expN, uint32 expD)
         external
         view
         returns (uint256 result, uint256 precision)
     {
-        (result, precision) = _power(_baseN, _baseD, _expN, _expD);
+        (result, precision) = _power(baseN, baseD, expN, expD);
     }
 
-    function generalLog_Harness(uint256 x) external pure returns (uint256 result) {
+    function generalLogHarness(uint256 x) external pure returns (uint256 result) {
         result = _generalLog(x);
     }
 
-    function floorLog2_Harness(uint256 _n) external pure returns (uint8 result) {
-        result = _floorLog2(_n);
+    function floorLog2Harness(uint256 x) external pure returns (uint8 result) {
+        result = _floorLog2(x);
     }
 
-    function findPositionInMaxExpArray_Harness(uint256 _x) external view returns (uint8 position) {
-        position = _findPositionInMaxExpArray(_x);
+    function findPositionInMaxExpArrayHarness(uint256 x) external view returns (uint8 position) {
+        position = _findPositionInMaxExpArray(x);
     }
 
-    function generalExp_Harness(uint256 x, uint8 precision) external pure returns (uint256 result) {
+    function generalExpHarness(uint256 x, uint8 precision) external pure returns (uint256 result) {
         result = _generalExp(x, precision);
     }
 
-    function optimalLog_Harness(uint256 x) external pure returns (uint256 result) {
+    function optimalLogHarness(uint256 x) external pure returns (uint256 result) {
         result = _optimalLog(x);
     }
 
-    function optimalExp_Harness(uint256 x) external pure returns (uint256 result) {
+    function optimalExpHarness(uint256 x) external pure returns (uint256 result) {
         result = _optimalExp(x);
     }
 }

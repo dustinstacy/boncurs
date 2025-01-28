@@ -6,50 +6,49 @@ import {LinFormula} from "../utils/LinFormula.sol";
 /// @notice Used only for testing the LinFormula contract
 contract LinFormulaHarness is LinFormula {
     function calculatePurchaseReturn(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint256 _initialPrice,
-        uint32 _scalingFactor,
-        uint256 _depositAmount
+        uint256 supply,
+        uint256 reserveBalance,
+        uint256 initialPrice,
+        uint32 scalingFactor,
+        uint256 depositAmount
     ) external pure returns (uint256 purchaseReturn) {
-        purchaseReturn =
-            _calculateLinPurchaseReturn(_supply, _reserveBalance, _initialPrice, _scalingFactor, _depositAmount);
+        purchaseReturn = _calculateLinPurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
     }
 
     function calculateSaleReturn(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint256 _initialReserve,
-        uint32 _scalingFactor,
-        uint256 _sellAmount
+        uint256 supply,
+        uint256 reserveBalance,
+        uint256 initialReserve,
+        uint32 scalingFactor,
+        uint256 sellAmount
     ) external pure returns (uint256 saleReturn) {
-        saleReturn = _calculateLinSaleReturn(_supply, _reserveBalance, _initialReserve, _scalingFactor, _sellAmount);
+        saleReturn = _calculateLinSaleReturn(supply, reserveBalance, initialReserve, scalingFactor, sellAmount);
     }
 
-    function currentTokenCost(uint256 _currentToken, uint32 _scalingFactor, uint256 _initialPrice)
+    function currentTokenCost(uint256 currentToken, uint32 scalingFactor, uint256 initialPrice)
         external
         pure
         returns (uint256 tokenCost)
     {
-        tokenCost = _currentTokenCost(_currentToken, _scalingFactor, _initialPrice);
+        tokenCost = _currentTokenCost(currentToken, scalingFactor, initialPrice);
     }
 
-    function totalCostOfTokens(uint256 _currentToken, uint32 _scalingFactor, uint256 _initialPrice)
+    function totalCostOfTokens(uint256 currentToken, uint32 scalingFactor, uint256 initialPrice)
         external
         pure
         returns (uint256 totalCost)
     {
-        totalCost = _totalCostOfTokens(_currentToken, _scalingFactor, _initialPrice);
+        totalCost = _totalCostOfTokens(currentToken, scalingFactor, initialPrice);
     }
 
     function calculateTokenCount(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint256 _initialPrice,
-        uint32 _scalingFactor,
-        uint256 _depositAmount
+        uint256 supply,
+        uint256 reserveBalance,
+        uint256 initialPrice,
+        uint32 scalingFactor,
+        uint256 depositAmount
     ) external pure returns (uint256 tokenCount) {
-        tokenCount = _calculateTokenCount(_supply, _reserveBalance, _initialPrice, _scalingFactor, _depositAmount);
+        tokenCount = _calculateTokenCount(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
     }
 
     function generalSqrt(uint256 x) external pure returns (uint256 result) {

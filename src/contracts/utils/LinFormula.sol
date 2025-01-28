@@ -26,39 +26,39 @@ abstract contract LinFormula {
      *     Then amount of whole tokens the deposit can stil cover is calculated using a sum of an arithmetic series rounded down to the nearest integer.
      *     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
      *
-     *     @param _supply            token total supply
-     *     @param _reserveBalance    total reserve balance
-     *     @param _initialPrice      initial price of the token
-     *     @param _scalingFactor     scaling factor for the token
-     *     @param _depositAmount     deposit amount, in reserve token
+     *     @param supply            token total supply
+     *     @param reserveBalance    total reserve balance
+     *     @param initialPrice      initial price of the token
+     *     @param scalingFactor     scaling factor for the token
+     *     @param depositAmount     deposit amount, in reserve token
      *
      *     @return purchaseReturn return amount
      */
     function _calculateLinPurchaseReturn(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint256 _initialPrice,
-        uint32 _scalingFactor,
-        uint256 _depositAmount
+        uint256 supply,
+        uint256 reserveBalance,
+        uint256 initialPrice,
+        uint32 scalingFactor,
+        uint256 depositAmount
     ) internal pure returns (uint256 purchaseReturn) {
         // Validate input
-        if (_initialPrice == 0 || _scalingFactor == 0 || _scalingFactor > MAX_SCALE) {
+        if (initialPrice == 0 || scalingFactor == 0 || scalingFactor > MAX_SCALE) {
             revert LinFormula__InvalidInput();
         }
 
         // If the deposit amount is 0, return 0
-        if (_depositAmount == 0) {
+        if (depositAmount == 0) {
             return 0;
         }
 
         // Determine the current token number, cost, and balance
-        uint256 currentToken = (_supply / WAD) + 1;
-        uint256 currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
-        uint256 currentTokenBalance = _totalCostOfTokens(currentToken, _scalingFactor, _initialPrice) - _reserveBalance;
+        uint256 currentToken = (supply / WAD) + 1;
+        uint256 currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialPrice);
+        uint256 currentTokenBalance = _totalCostOfTokens(currentToken, scalingFactor, initialPrice) - reserveBalance;
         uint256 currentFragment;
 
         // If the deposit amount is less than the current token balance, calculate the return based on the current token cost
-        uint256 remainingDeposit = _depositAmount;
+        uint256 remainingDeposit = depositAmount;
         if (remainingDeposit <= currentTokenBalance) {
             currentFragment = remainingDeposit * WAD / currentTokenCost;
             remainingDeposit = 0;
@@ -69,14 +69,14 @@ abstract contract LinFormula {
         remainingDeposit -= currentTokenBalance;
         purchaseReturn += currentTokenBalance * WAD / currentTokenCost;
         currentToken++;
-        currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
-        uint256 newReserveBalance = _reserveBalance + currentTokenBalance;
+        currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialPrice);
+        uint256 newReserveBalance = reserveBalance + currentTokenBalance;
 
         // Determine the amount of whole tokens the deposit can still cover and their cost
         uint256 tokensToBuy =
-            _calculateTokenCount(_depositAmount, _reserveBalance, _initialPrice, _scalingFactor, currentToken);
+            _calculateTokenCount(depositAmount, reserveBalance, initialPrice, scalingFactor, currentToken);
         uint256 tokensToBuyCost =
-            _totalCostOfTokens(currentToken + tokensToBuy - 1, _scalingFactor, _initialPrice) - newReserveBalance;
+            _totalCostOfTokens(currentToken + tokensToBuy - 1, scalingFactor, initialPrice) - newReserveBalance;
 
         // Calibrate the variables after determining the amount of whole tokens the deposit can still cover
         remainingDeposit -= tokensToBuyCost;
@@ -85,12 +85,12 @@ abstract contract LinFormula {
         // If there is a remainder, calculate the final addition to the return based on the new current token cost
         if (remainingDeposit > 0) {
             currentToken += tokensToBuy;
-            currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
+            currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialPrice);
             while (remainingDeposit >= currentTokenCost) {
                 remainingDeposit -= currentTokenCost;
                 purchaseReturn += WAD;
                 currentToken++;
-                currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
+                currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialPrice);
             }
             if (remainingDeposit < currentTokenCost && remainingDeposit > 0) {
                 purchaseReturn += remainingDeposit * WAD / currentTokenCost;
@@ -110,45 +110,45 @@ abstract contract LinFormula {
      *     Then the amount of whole tokens left in the sale is converted to the reserve token and added to the return.
      *     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
      *
-     *     @param _supply            token total supply
-     *     @param _reserveBalance    total reserve
-     *     @param _initialPrice      initial price of the token
-     *     @param _scalingFactor     scaling factor for the token
-     *     @param _sellAmount        sell amount, in the token itself
+     *     @param supply            token total supply
+     *     @param reserveBalance    total reserve
+     *     @param initialPrice      initial price of the token
+     *     @param scalingFactor     scaling factor for the token
+     *     @param sellAmount        sell amount, in the token itself
      *
      *
      *    @return saleReturn return amount
      */
     function _calculateLinSaleReturn(
-        uint256 _supply,
-        uint256 _reserveBalance,
-        uint256 _initialPrice,
-        uint32 _scalingFactor,
-        uint256 _sellAmount
+        uint256 supply,
+        uint256 reserveBalance,
+        uint256 initialPrice,
+        uint32 scalingFactor,
+        uint256 sellAmount
     ) internal pure returns (uint256 saleReturn) {
         // Validate input
-        if (_initialPrice == 0 || _scalingFactor == 0 || _scalingFactor > MAX_SCALE || _sellAmount > _supply) {
+        if (initialPrice == 0 || scalingFactor == 0 || scalingFactor > MAX_SCALE || sellAmount > supply) {
             revert LinFormula__InvalidInput();
         }
 
         // If the sell amount is 0, return 0
-        if (_sellAmount == 0) {
+        if (sellAmount == 0) {
             return 0;
         }
 
         // If the sell amount is equal to the total supply, return the reserve balance
-        if (_sellAmount == _supply) {
-            return _reserveBalance;
+        if (sellAmount == supply) {
+            return reserveBalance;
         }
 
         // Determine the current token number, cost, balance, and fragment
-        uint256 currentToken = (_supply / WAD) + 1;
-        uint256 currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
-        uint256 currentTokenBalance = _totalCostOfTokens(currentToken, _scalingFactor, _initialPrice) - _reserveBalance;
+        uint256 currentToken = (supply / WAD) + 1;
+        uint256 currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialPrice);
+        uint256 currentTokenBalance = _totalCostOfTokens(currentToken, scalingFactor, initialPrice) - reserveBalance;
         uint256 currentFragment = WAD - (currentTokenBalance * WAD / currentTokenCost);
 
         // If the sell amount is less than the current token fragment, calculate the return based on the current token cost
-        uint256 remainingSellAmount = _sellAmount;
+        uint256 remainingSellAmount = sellAmount;
         if (remainingSellAmount <= currentFragment) {
             saleReturn += remainingSellAmount * currentTokenCost / WAD;
             saleReturn = saleReturn * WAD / WAD;
@@ -164,8 +164,8 @@ abstract contract LinFormula {
         // Calculate the value of whole tokens left in the sale
         if (remainingSellAmount >= WAD) {
             uint256 tokensToSell = remainingSellAmount / WAD;
-            uint256 tokenSellValue = _totalCostOfTokens(currentToken, _scalingFactor, _initialPrice)
-                - _totalCostOfTokens(currentToken - tokensToSell, _scalingFactor, _initialPrice);
+            uint256 tokenSellValue = _totalCostOfTokens(currentToken, scalingFactor, initialPrice)
+                - _totalCostOfTokens(currentToken - tokensToSell, scalingFactor, initialPrice);
             saleReturn += tokenSellValue;
             remainingSellAmount -= tokensToSell * WAD;
             currentToken -= tokensToSell;
@@ -173,7 +173,7 @@ abstract contract LinFormula {
 
         // If there is a remainder, calculate the final addition to the return based on the new current token cost
         if (remainingSellAmount > 0) {
-            currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
+            currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialPrice);
             saleReturn += (remainingSellAmount * currentTokenCost) / WAD;
             remainingSellAmount = 0;
         }
@@ -193,60 +193,59 @@ abstract contract LinFormula {
     /**
      * Calculate the total cost of tokens up to the current token
      *
-     * @param _currentToken The current token number
-     * @param _scalingFactor The scaling factor for the token
-     * @param _initialPrice The initial price of the token
+     * @param currentToken The current token number
+     * @param scalingFactor The scaling factor for the token
+     * @param initialPrice The initial price of the token
      *
      * @return totalCostOfTokens The total cost of tokens up to the current token
      */
-    function _totalCostOfTokens(uint256 _currentToken, uint32 _scalingFactor, uint256 _initialPrice)
+    function _totalCostOfTokens(uint256 currentToken, uint32 scalingFactor, uint256 initialPrice)
         internal
         pure
         returns (uint256)
     {
-        return ((_currentToken * (_currentToken + 1) * _initialPrice) * _scalingFactor / 2) / PURE_LINEAR_SCALE;
+        return ((currentToken * (currentToken + 1) * initialPrice) * scalingFactor / 2) / PURE_LINEAR_SCALE;
     }
 
     /**
      * Calculate the current token cost
      *
-     * @param _currentToken The current token number
-     * @param _scalingFactor The scaling factor for the token
-     * @param _initialPrice The initial price of the token
+     * @param currentToken The current token number
+     * @param scalingFactor The scaling factor for the token
+     * @param initialPrice The initial price of the token
      *
      * @return currentTokenCost The current token cost
      */
-    function _currentTokenCost(uint256 _currentToken, uint32 _scalingFactor, uint256 _initialPrice)
+    function _currentTokenCost(uint256 currentToken, uint32 scalingFactor, uint256 initialPrice)
         internal
         pure
         returns (uint256 currentTokenCost)
     {
-        return _initialPrice * _currentToken * _scalingFactor / PURE_LINEAR_SCALE;
+        return initialPrice * currentToken * scalingFactor / PURE_LINEAR_SCALE;
     }
 
     /**
      * Calculate the amount of whole tokens the deposit can still cover
      *
-     * @param _depositAmount The deposit amount, in reserve token
-     * @param _reserveBalance The total reserve balance
-     * @param _initialPrice The initial price of the token
-     * @param _currentToken The current token number
+     * @param depositAmount The deposit amount, in reserve token
+     * @param reserveBalance The total reserve balance
+     * @param initialPrice The initial price of the token
+     * @param currentToken The current token number
      *
      * @return tokenCount The amount of whole tokens the deposit can still cover
      */
     function _calculateTokenCount(
-        uint256 _depositAmount,
-        uint256 _reserveBalance,
-        uint256 _initialPrice,
-        uint32 _scalingFactor,
-        uint256 _currentToken
+        uint256 depositAmount,
+        uint256 reserveBalance,
+        uint256 initialPrice,
+        uint32 scalingFactor,
+        uint256 currentToken
     ) internal pure returns (uint256 tokenCount) {
         // Calculate the value inside the square root of the quadratic formula
 
-        uint256 term =
-            (2 * ((_depositAmount + _reserveBalance) * _scalingFactor) + WAD) / _initialPrice / _scalingFactor;
-        term = term * PURE_LINEAR_SCALE / _scalingFactor;
-        // term = term * _scalingFactor / PURE_LINEAR_SCALE;
+        uint256 term = (2 * ((depositAmount + reserveBalance) * scalingFactor) + WAD) / initialPrice / scalingFactor;
+        term = term * PURE_LINEAR_SCALE / scalingFactor;
+        // term = term * scalingFactor / PURE_LINEAR_SCALE;
         uint256 sqrtTerm;
         console.log("term: ", term);
 
@@ -260,7 +259,7 @@ abstract contract LinFormula {
         }
 
         // Calculate the difference to determine the amount of whole tokens the deposit can still cover
-        tokenCount = sqrtTerm - _currentToken;
+        tokenCount = sqrtTerm - currentToken;
         console.log("tokenCount: ", tokenCount);
     }
 
