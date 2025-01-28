@@ -202,7 +202,7 @@ contract BancorFormulaTest is Test {
     // Internal view functions not fuzz tested
     function test_RevertPower() public {
         vm.expectRevert(BancorFormula__InvalidInput.selector);
-        harness.power_Harness(MAX_NUM, ONE, ONE, ONE);
+        harness.power(MAX_NUM, ONE, ONE, ONE);
     }
 
     // Testing to ensure reasonable range of bounds are not failing either due to overflow or underflow
@@ -218,7 +218,7 @@ contract BancorFormulaTest is Test {
         uint32 expN = 500000;
         uint32 expD = 1000000;
 
-        harness.power_Harness(baseN, baseD, expN, expD);
+        harness.power(baseN, baseD, expN, expD);
 
         // trigger _generalLog() & _optimalExp()
         baseN = 1e21;
@@ -226,7 +226,7 @@ contract BancorFormulaTest is Test {
         expN = 500000;
         expD = 1000000;
 
-        harness.power_Harness(baseN, baseD, expN, expD);
+        harness.power(baseN, baseD, expN, expD);
 
         // trigger _generalLog() & _generalExp()
         baseN = 1e21;
@@ -234,7 +234,7 @@ contract BancorFormulaTest is Test {
         expN = 1000000;
         expD = 250000;
 
-        harness.power_Harness(baseN, baseD, expN, expD);
+        harness.power(baseN, baseD, expN, expD);
     }
 
     // Internal view functions fuzz tested with appropriate bounds
@@ -243,7 +243,7 @@ contract BancorFormulaTest is Test {
         uint256 upperBound = MAX_EXP_ARRAY_VALUE;
         vm.assume(x > lowerBound && x < upperBound);
 
-        uint8 result = harness.findPositionInMaxExpArray_Harness(x);
+        uint8 result = harness.findPositionInMaxExpArray(x);
         assertGe(result, MIN_PRECISION);
         assertLe(result, MAX_PRECISION);
     }
@@ -254,9 +254,9 @@ contract BancorFormulaTest is Test {
         vm.assume(x > lowerBound);
 
         //overflow check
-        harness.generalLog_Harness(UINT256_MAX);
+        harness.generalLog(UINT256_MAX);
 
-        uint256 result = harness.generalLog_Harness(x);
+        uint256 result = harness.generalLog(x);
         // generalLog(lowerBound) = 1.179e38
         uint256 minResult = 0x58b90bfbe8e7bcd5e4f1d9cc01f97b4b;
         assertGe(result, minResult);
@@ -267,9 +267,9 @@ contract BancorFormulaTest is Test {
         vm.assume(x > lowerBound);
 
         //overflow check
-        harness.floorLog2_Harness(UINT256_MAX);
+        harness.floorLog2(UINT256_MAX);
 
-        uint8 result = harness.floorLog2_Harness(x);
+        uint8 result = harness.floorLog2(x);
         // Range of outcomes is 256
         uint8 minResult = 0;
         uint8 maxResult = 255;
@@ -279,20 +279,20 @@ contract BancorFormulaTest is Test {
 
     function test_generalExp(uint256 x) public view {
         uint256 lowerBound = OPT_EXP_MAX_VAL;
-        uint8 lowerBoundPrecision = harness.findPositionInMaxExpArray_Harness(lowerBound);
+        uint8 lowerBoundPrecision = harness.findPositionInMaxExpArray(lowerBound);
         uint256 upperBound = MAX_EXP_ARRAY_VALUE;
-        uint8 upperBoundPrecision = harness.findPositionInMaxExpArray_Harness(upperBound);
+        uint8 upperBoundPrecision = harness.findPositionInMaxExpArray(upperBound);
         vm.assume(x > lowerBound && x < upperBound);
 
         //lower bound check
-        harness.generalExp_Harness((lowerBound >> (MAX_PRECISION - lowerBoundPrecision)), lowerBoundPrecision);
+        harness.generalExp((lowerBound >> (MAX_PRECISION - lowerBoundPrecision)), lowerBoundPrecision);
 
         //upper bound check
-        harness.generalExp_Harness((upperBound >> (MAX_PRECISION - upperBoundPrecision)), upperBoundPrecision);
+        harness.generalExp((upperBound >> (MAX_PRECISION - upperBoundPrecision)), upperBoundPrecision);
 
         //fuzz check
-        uint8 precision = harness.findPositionInMaxExpArray_Harness(x);
-        harness.generalExp_Harness((x >> (MAX_PRECISION - precision)), precision);
+        uint8 precision = harness.findPositionInMaxExpArray(x);
+        harness.generalExp((x >> (MAX_PRECISION - precision)), precision);
     }
 
     function test_optimalLog(uint256 x) public view {
@@ -300,7 +300,7 @@ contract BancorFormulaTest is Test {
         uint256 upperBound = OPT_LOG_MAX_VAL - 1;
         vm.assume(x > lowerBound && x < upperBound);
 
-        uint256 result = harness.optimalLog_Harness(x);
+        uint256 result = harness.optimalLog(x);
         // optimalLog(lowerBound) = 0
         uint256 minResult = 0;
         // optimalLog(upperBound) = 1.701e38
@@ -314,7 +314,7 @@ contract BancorFormulaTest is Test {
         uint256 upperBound = OPT_EXP_MAX_VAL - 1;
         vm.assume(x < upperBound);
 
-        uint256 result = harness.optimalExp_Harness(x);
+        uint256 result = harness.optimalExp(x);
         // optimalExp(0)
         uint256 minResult = 0x80000000000000000000000000000000;
         // optimalExp(upperBound) = 1.511e45
