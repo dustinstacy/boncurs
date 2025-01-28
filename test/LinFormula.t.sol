@@ -281,6 +281,34 @@ contract LinFormulaTest is Test {
         assertApproxEqRel(saleReturn, depositAmount, 100);
     }
 
+    function test_LinFormulaCalculations10() public view {
+        uint256 supply = 100e18;
+        uint256 reserveBalance = 505e15;
+        uint256 initialPrice = 1e16;
+        uint256 depositAmount = WAD;
+        uint32 scalingFactor = 10000;
+
+        uint256 purchaseReturn =
+            harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
+
+        supply += purchaseReturn;
+        reserveBalance += depositAmount;
+        uint256 sellAmount = purchaseReturn;
+
+        uint256 saleReturn =
+            harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
+
+        uint256 precision = 100;
+        if (saleReturn > WAD) {
+            uint256 length = harness.getLength(saleReturn / WAD);
+            precision = 10 ** length;
+        }
+
+        assertLe(saleReturn, depositAmount);
+        assertApproxEqAbs(saleReturn, depositAmount, precision);
+        assertApproxEqRel(saleReturn, depositAmount, 100);
+    }
+
     function test_RevertIf_InvalidCalculateLinPurchaseReturnInput() public {
         vm.expectRevert(LinFormula__InvalidInput.selector);
         harness.calculatePurchaseReturn(0, 0, 0, ONE, 0);
@@ -345,46 +373,6 @@ contract LinFormulaTest is Test {
         assertEq(saleReturn, reserveBalance);
     }
 
-    function test_totalCostOfTokens() public view {
-        uint256 currentToken = 1;
-        uint32 scalingFactor = 1000000;
-        uint256 initialPrice = WAD;
-
-        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
-
-        assertEq(totalCost, WAD);
-    }
-
-    function test_totalCostOfTokens2() public view {
-        uint256 currentToken = 100;
-        uint32 scalingFactor = 1000000;
-        uint256 initialPrice = WAD;
-
-        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
-
-        assertEq(totalCost, 505e19);
-    }
-
-    function test_totalCostOfTokens3() public view {
-        uint256 currentToken = 100;
-        uint32 scalingFactor = 1000000;
-        uint256 initialPrice = 15e17;
-
-        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
-
-        assertEq(totalCost, 7575e18);
-    }
-
-    function test_totalCostOfTokens4() public view {
-        uint256 currentToken = 42;
-        uint32 scalingFactor = 500000;
-        uint256 initialPrice = WAD;
-
-        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
-
-        assertEq(totalCost, 4515e17);
-    }
-
     function test_currentTokenCost() public view {
         uint256 currentToken = 1;
         uint32 scalingFactor = 1000000;
@@ -425,37 +413,139 @@ contract LinFormulaTest is Test {
         assertEq(currentTokenCost, 21e18);
     }
 
+    function test_totalCostOfTokens() public view {
+        uint256 currentToken = 1;
+        uint32 scalingFactor = 1000000;
+        uint256 initialPrice = WAD;
+
+        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
+
+        assertEq(totalCost, WAD);
+    }
+
+    function test_totalCostOfTokens2() public view {
+        uint256 currentToken = 100;
+        uint32 scalingFactor = 1000000;
+        uint256 initialPrice = WAD;
+
+        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
+
+        assertEq(totalCost, 505e19);
+    }
+
+    function test_totalCostOfTokens3() public view {
+        uint256 currentToken = 100;
+        uint32 scalingFactor = 1000000;
+        uint256 initialPrice = 15e17;
+
+        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
+
+        assertEq(totalCost, 7575e18);
+    }
+
+    function test_totalCostOfTokens4() public view {
+        uint256 currentToken = 42;
+        uint32 scalingFactor = 500000;
+        uint256 initialPrice = WAD;
+
+        uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
+
+        assertEq(totalCost, 4515e17);
+    }
+
     function test_calculateTokenCount() public view {
         uint256 deposit = WAD;
-        uint256 reserveBalance = WAD;
+        uint256 reserveBalance = 1e18;
+        uint32 scalingFactor = 1000000;
         uint256 initialPrice = WAD;
         uint256 currentToken = 1;
 
-        uint256 tokenCount = harness.calculateTokenCount(deposit, reserveBalance, initialPrice, currentToken);
+        uint256 tokenCount =
+            harness.calculateTokenCount(deposit, reserveBalance, initialPrice, scalingFactor, currentToken);
 
         assertEq(tokenCount, 1);
     }
 
     function test_calculateTokenCount2() public view {
-        uint256 deposit = WAD * 10;
-        uint256 reserveBalance = 0;
+        uint256 deposit = WAD * 3;
+        uint256 reserveBalance = 1e18;
+        uint32 scalingFactor = 1000000;
         uint256 initialPrice = WAD;
         uint256 currentToken = 1;
 
-        uint256 tokenCount = harness.calculateTokenCount(deposit, reserveBalance, initialPrice, currentToken);
+        uint256 tokenCount =
+            harness.calculateTokenCount(deposit, reserveBalance, initialPrice, scalingFactor, currentToken);
 
-        assertEq(tokenCount, 3);
+        assertEq(tokenCount, 1);
     }
 
     function test_calculateTokenCount3() public view {
-        uint256 deposit = WAD;
-        uint256 reserveBalance = WAD * 10;
+        uint256 deposit = 500e18;
+        uint256 reserveBalance = 1e18;
+        uint32 scalingFactor = 1000000;
         uint256 initialPrice = WAD;
-        uint256 currentToken = 4;
+        uint256 currentToken = 1;
 
-        uint256 tokenCount = harness.calculateTokenCount(deposit, reserveBalance, initialPrice, currentToken);
+        uint256 tokenCount =
+            harness.calculateTokenCount(deposit, reserveBalance, initialPrice, scalingFactor, currentToken);
 
-        assertEq(tokenCount, 0);
+        assertEq(tokenCount, 30);
+    }
+
+    function test_optimalSqrt() public view {
+        uint256 x = 100;
+        uint256 result = harness.optimalSqrt(x);
+
+        assertEq(result, 10);
+    }
+
+    function test_optimalSqrt2() public view {
+        uint256 x = 99;
+        uint256 result = harness.optimalSqrt(x);
+
+        assertEq(result, 9);
+    }
+
+    function test_optimalSqrt3() public view {
+        uint256 x = 3;
+        uint256 result = harness.optimalSqrt(x);
+
+        assertEq(result, 2);
+    }
+
+    function test_optimalSqrt4() public view {
+        uint256 x = 1;
+        uint256 result = harness.optimalSqrt(x);
+
+        assertEq(result, 2);
+    }
+
+    function test_generalSqrt() public view {
+        uint256 x = 1000000000000000000;
+        uint256 result = harness.generalSqrt(x);
+
+        assertEq(result, 1000000000);
+    }
+
+    function test_generalSqrt2() public view {
+        uint256 x = 3481;
+        uint256 result = harness.generalSqrt(x);
+
+        assertEq(result, 59);
+    }
+
+    function test_generalSqrt3() public view {
+        uint256 x = 9025;
+        uint256 result = harness.generalSqrt(x);
+
+        assertEq(result, 95);
+    }
+
+    function test_generalSqrt4() public view {
+        uint256 x = 678007321744;
+        uint256 result = harness.generalSqrt(x);
+
+        assertEq(result, 823412);
     }
 
     function test_getLength() public view {

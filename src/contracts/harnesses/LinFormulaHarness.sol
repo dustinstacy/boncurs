@@ -43,12 +43,13 @@ contract LinFormulaHarness is LinFormula {
     }
 
     function calculateTokenCount(
-        uint256 _depositAmount,
+        uint256 _supply,
         uint256 _reserveBalance,
         uint256 _initialPrice,
-        uint256 _currentToken
+        uint32 _scalingFactor,
+        uint256 _depositAmount
     ) external pure returns (uint256 tokenCount) {
-        tokenCount = _calculateTokenCount(_depositAmount, _reserveBalance, _initialPrice, _currentToken);
+        tokenCount = _calculateTokenCount(_supply, _reserveBalance, _initialPrice, _scalingFactor, _depositAmount);
     }
 
     function generalSqrt(uint256 x) external pure returns (uint256 result) {
