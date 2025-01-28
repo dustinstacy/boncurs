@@ -58,4 +58,8 @@ contract LinFormulaHarness is LinFormula {
     function optimalSqrt(uint256 x) external pure returns (uint256 result) {
         result = _optimalSqrt(x);
     }
+
+    function getLength(uint256 x) external pure returns (uint256 result) {
+        result = _getLength(x);
+    }
 }

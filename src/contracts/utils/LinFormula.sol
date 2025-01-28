@@ -3,11 +3,13 @@ pragma solidity ^0.8.28;
 
 /// @notice Linear formula contract for calculating the purchase and sale return of a token
 abstract contract LinFormula {
-    // Max reserve ratio in parts per million
+    // Max scaling factor in parts per million
     uint32 private constant MAX_SCALE = 100000000; // 10000%
+    // 1:1 scaling factor in parts per million
     uint32 private constant PURE_LINEAR_SCALE = 1000000; // 100%
-    // 1 ether
+    // Decimal precision (1 Ether)
     uint256 private constant WAD = 10 ** 18;
+
     /// @dev Value that represents the point at which the optimal function approximations are still effective
     uint256 private constant OPTIMAL_TERM_MAX_VAL = 0x6a;
 
@@ -77,7 +79,6 @@ abstract contract LinFormula {
         // Calculate the cost of the whole tokens to buy that the deposit can still cover
         uint256 tokensToBuyCost =
             _totalCostOfTokens(currentToken + tokensToBuy - 1, _scalingFactor, _initialPrice) - newReserveBalance;
-
         // Calibrate the variables after determining the amount of whole tokens the deposit can still cover
         remainingDeposit -= tokensToBuyCost;
         purchaseReturn += tokensToBuy * WAD;
@@ -133,7 +134,7 @@ abstract contract LinFormula {
         uint256 _sellAmount
     ) internal pure returns (uint256 saleReturn) {
         // Validate input
-        if (_initialPrice == 0 || _scalingFactor == 0 || _scalingFactor > MAX_SCALE) {
+        if (_initialPrice == 0 || _scalingFactor == 0 || _scalingFactor > MAX_SCALE || _sellAmount > _supply) {
             revert LinFormula__InvalidInput();
         }
 
@@ -146,17 +147,6 @@ abstract contract LinFormula {
         if (_sellAmount == _supply) {
             return _reserveBalance;
         }
-
-        // Precision for rounding
-        uint256 precision;
-        if (_sellAmount >= WAD * 1000) {
-            precision = 100000;
-        } else if (_sellAmount >= WAD * 100) {
-            precision = 10000;
-        } else {
-            precision = 100;
-        }
-
         uint256 remainingSellAmount = _sellAmount;
         // Determine the current token number
         uint256 currentToken = (_supply / WAD) + 1;
@@ -170,7 +160,7 @@ abstract contract LinFormula {
         // If the sell amount is less than the current token fragment, calculate the return based on the current token cost
         if (remainingSellAmount <= currentFragment) {
             saleReturn += remainingSellAmount * currentTokenCost / WAD;
-            saleReturn = ((saleReturn * WAD / WAD) / precision) * precision;
+            saleReturn = saleReturn * WAD / WAD;
             remainingSellAmount = 0;
             return saleReturn;
         }
@@ -195,6 +185,12 @@ abstract contract LinFormula {
             currentTokenCost = _currentTokenCost(currentToken, _scalingFactor, _initialPrice);
             saleReturn += (remainingSellAmount * currentTokenCost) / WAD;
             remainingSellAmount = 0;
+        }
+
+        uint256 precision;
+        if (saleReturn > WAD) {
+            uint256 length = _getLength(saleReturn / WAD);
+            precision = 10 ** length;
         }
 
         // Round the return to the nearest precision
@@ -244,14 +240,14 @@ abstract contract LinFormula {
      * @param _initialPrice The initial price of the token
      * @param _currentToken The current token number
      *
-     * @return tokenThreshold The amount of whole tokens the deposit can still cover
+     * @return tokenCount The amount of whole tokens the deposit can still cover
      */
     function _calculateTokenCount(
         uint256 _depositAmount,
         uint256 _reserveBalance,
         uint256 _initialPrice,
         uint256 _currentToken
-    ) internal pure returns (uint256 tokenThreshold) {
+    ) internal pure returns (uint256 tokenCount) {
         // Calculate the value inside the square root of the quadratic formula
         uint256 term = (2 * (_depositAmount + _reserveBalance) + WAD) / _initialPrice;
         uint256 sqrtTerm;
@@ -266,7 +262,7 @@ abstract contract LinFormula {
         }
 
         // Calculate the difference to determine the amount of whole tokens the deposit can still cover
-        tokenThreshold = sqrtTerm - _currentToken;
+        tokenCount = sqrtTerm - _currentToken;
     }
 
     // as proposed in EIP-7054
@@ -326,5 +322,14 @@ abstract contract LinFormula {
             // instead of returning 1, we add 1 to account for the current token when returning a root value less than 2;
             z = 2;
         }
+    }
+
+    function _getLength(uint256 x) internal pure returns (uint256) {
+        uint256 length = 0;
+        while (x > 0) {
+            x /= 10;
+            length++;
+        }
+        return length;
     }
 }
