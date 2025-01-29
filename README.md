@@ -20,6 +20,9 @@ Boncurs Bonding Curve Library
 
 ---
 
+> [!Warning]
+> These contracts have not been audited and are not intended for production. Use at your own risk.
+
 ## Overview
 
 **A smart contract bonding curve library.** For use with fungible and non-fungible token projects.
