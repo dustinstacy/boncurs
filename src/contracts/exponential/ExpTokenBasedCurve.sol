@@ -3,6 +3,11 @@ pragma solidity ^0.8.28;
 
 import {ExpTokenBasedFormula} from "./ExpTokenBasedFormula.sol";
 
+/**
+ * @title ExpTokenBasedCurve
+ * @author Dustin Stacy
+ * @notice Used to get the purchase and sale return values for an exponential token-based curve
+ */
 contract ExpTokenBasedCurve is ExpTokenBasedFormula {
     function getPurchaseReturn(uint256 supply, uint256 initialCost, uint32 scalingFactor, uint256 depositAmount)
         internal

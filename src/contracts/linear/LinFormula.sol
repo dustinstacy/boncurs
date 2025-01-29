@@ -1,9 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {console} from "forge-std/console.sol";
-
-/// @notice Linear formula contract for calculating the purchase and sale return of a token
+/**
+ * @title  LinFormula
+ * @author Dustin Stacy
+ * @notice Provides functions for calculating the purchase and sale return values on a linear curve using a scaling factor
+ *         This formula converts a given reserve token amount to a token amount and vice versa
+ */
 abstract contract LinFormula {
     // Max scaling factor in parts per million
     uint32 private constant MAX_SCALE = 100000000; // 10000%

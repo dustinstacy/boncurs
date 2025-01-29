@@ -1,8 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {console} from "forge-std/console.sol";
-
+/**
+ * @title  ExpTokenBasedFormula
+ * @author Dustin Stacy
+ * @notice Provides functions for calculating the purchase and sale return values on an exponential token-based curve using a scaling factor
+ *         This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
+ */
 abstract contract ExpTokenBasedFormula {
     // Max reserve ratio in parts per million
     uint32 private constant MAX_SCALE = 1000000; // 10000%

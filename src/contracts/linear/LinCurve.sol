@@ -3,6 +3,11 @@ pragma solidity ^0.8.28;
 
 import {LinFormula} from "./LinFormula.sol";
 
+/**
+ * @title  LinCurve
+ * @author Dustin Stacy
+ * @notice Used to get the purchase and sale return values for a linear curve
+ */
 contract LinCurve is LinFormula {
     function getPurchaseReturn(
         uint256 supply,

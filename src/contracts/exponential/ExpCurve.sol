@@ -3,6 +3,11 @@ pragma solidity ^0.8.28;
 
 import {BancorFormula} from "./BancorFormula.sol";
 
+/**
+ * @title  LinCurve
+ * @author Dustin Stacy
+ * @notice Used to get the purchase and sale return values for an exponential curve
+ */
 contract ExpCurve is BancorFormula {
     function getPurchaseReturn(uint256 supply, uint256 reserveBalance, uint32 reserveRatio, uint256 depositAmount)
         internal

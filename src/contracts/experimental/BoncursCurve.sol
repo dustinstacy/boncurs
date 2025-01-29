@@ -3,6 +3,10 @@ pragma solidity ^0.8.28;
 
 import {BoncursFormula} from "./BoncursFormula.sol";
 
+/**
+ * @title BoncursCurve
+ * @notice Used to get the purchase and sale return values for a Boncurs curve
+ */
 abstract contract BoncursCurve is BoncursFormula {
     function getPurchaseCost(
         uint256 supply,

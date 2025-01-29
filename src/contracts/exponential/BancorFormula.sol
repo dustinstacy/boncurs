@@ -1,9 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-/// @notice Updated version of the BancorFormula contract from the Bancor Protocol
-///         Editted with personal preferences and to be compatible with Solidity 0.8.28
-///         See README.md for detailed changes
+/**
+ * @title  BancorFormula
+ * @author Bancor
+ * @notice Provides functions for calculating the purchase and sale return values on a linear curve using a scaling factor
+ *         This formula converts a given reserve token amount to a token amount and vice versa
+ *
+ *         This is an updated version of the BancorFormula contract from the Bancor Protocol
+ *         Editted to be compatible with Solidity 0.8.28
+ *         See README.md for detailed changes
+ */
 abstract contract BancorFormula {
     uint256 private constant ONE = 1;
     // Max reserve ratio in parts per million
