@@ -1,6 +1,7 @@
-# Linear Curve
+> [!Warning]
+> These contracts have not been audited and are not intended for production. Use at your own risk.
 
-**Warning: This contract has not been audited and is not intended for production. Use at your own risk.**
+# Linear Curve
 
 ## Overview
 
@@ -32,8 +33,6 @@ The **LinFormula** contract provides a straightforward method for calculating th
 By using this contract, you benefit from a transparent, predictable token model that is ideal for simple token economies, staking systems, and predictable crowdfunding models. It is particularly well-suited for use cases where consistent, gradual price increases are desired over time.
 
 # Linear Token Based Curve
-
-**Warning: This contract has not been audited and is not intended for production. Use at your own risk.**
 
 ## Overview
 

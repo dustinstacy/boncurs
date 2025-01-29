@@ -1,6 +1,7 @@
-# Exponential Curve
+> [!Warning]
+> These contracts have not been audited and are not intended for production. Use at your own risk.
 
-**Warning: This contract has not been audited and is not intended for production. Use at your own risk.**
+# Exponential Curve
 
 ## Overview
 
@@ -50,8 +51,6 @@ The **BancorFormula** contract calculates the cost of purchasing tokens or the r
 By using this contract, you benefit from a flexible, high-growth pricing model that is ideal for projects with rapidly changing token economies or those seeking to encourage early participation while ensuring long-term token appreciation.
 
 # Exponential Token Based Curve
-
-**Warning: This contract has not been audited and is not intended for production. Use at your own risk.**
 
 ## Overview
 
