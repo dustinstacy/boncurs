@@ -1,6 +1,7 @@
 [profile.default]
 src = "src"
 out = "out"
+solc-version = "0.8.28"
 libs = ["lib"]
 gas_reports = ["*"]
 [fuzz]

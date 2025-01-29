@@ -1,0 +1,27 @@
+{
+    "name": "@boncurs/contracts",
+    "version": "0.1.0-alpha.1",
+    "description": "Bonding Curve Library for Solidity",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dustinstacy/boncurs.git"
+    },
+    "keywords": [
+        "boncurs",
+        "bonding",
+        "curve",
+        "solidity",
+        "ethereum",
+        "smart",
+        "contracts"
+    ],
+    "author": "Dustin Stacy",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dustinstacy/boncurs/issues"
+    },
+    "homepage": "https://github.com/dustinstacy/boncurs#readme"
+}

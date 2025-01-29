@@ -1,15 +1,25 @@
 {
-    "name": "boncurs",
+    "name": "boncurs-solidity",
     "description": "Bonding Curve Library for Solidity",
     "version": "0.1.0-alpha.1",
+    "private": false,
+    "files": [
+        "src/contracts/"
+    ],
     "scripts": {
-        "test": "hardhat test"
+        "build": "forge build",
+        "clean": "forge clean",
+        "coverage": "forge coverage",
+        "docs": "forge doc",
+        "format": "forge fmt",
+        "test": "forge test"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/dustinstacy/boncurs.git"
     },
     "keywords": [
+        "boncurs",
         "bonding",
         "curve",
         "solidity",
