@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BancorFormula} from "../utils/BancorFormula.sol";
+import {BancorFormula} from "../../src/contracts/exponential/BancorFormula.sol";
 
 /// @notice Used only for testing the BancorFormula contract
 contract BancorFormulaHarness is BancorFormula {

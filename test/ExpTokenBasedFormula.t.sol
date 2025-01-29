@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-import {ExpTokenBasedFormulaHarness} from "src/contracts/harnesses/ExpTokenBasedFormulaHarness.sol";
+import {ExpTokenBasedFormulaHarness} from "./harnesses/ExpTokenBasedFormulaHarness.sol";
 
 contract ExpTokenBasedFormulaTest is Test {
     ExpTokenBasedFormulaHarness public harness;
@@ -24,7 +24,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -40,7 +40,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost2() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -56,7 +56,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost3() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 2;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -72,7 +72,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost4() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 20000;
+        uint32 scalingFactor = 20000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -88,7 +88,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost5() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -104,7 +104,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost6() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 50000;
+        uint32 scalingFactor = 50000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -120,7 +120,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost7() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 50000;
+        uint32 scalingFactor = 50000;
         uint256 amount = 2;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -136,7 +136,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost8() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 5;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -152,7 +152,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost9() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 20000;
+        uint32 scalingFactor = 20000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -168,7 +168,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost10() public view {
         uint256 supply = 27;
         uint256 initialCost = 5 * WAD;
-        uint256 scalingFactor = 2000;
+        uint32 scalingFactor = 2000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -184,7 +184,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCost11() public view {
         uint256 supply = 12;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 50000;
+        uint32 scalingFactor = 50000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -211,7 +211,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCostReturnsZero() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 0;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -222,7 +222,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedPurchaseCostReturnsInitialCost() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -247,7 +247,7 @@ contract ExpTokenBasedFormulaTest is Test {
     function test_calculateExpTokenBasedSaleReturnReturnsZero() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = HALF_SCALE;
+        uint32 scalingFactor = HALF_SCALE;
         uint256 amount = 0;
 
         uint256 saleReturn = harness.calculateExpTokenBasedSaleReturn(supply, initialCost, scalingFactor, amount);

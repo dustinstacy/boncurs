@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-import {LinTokenBasedFormulaHarness} from "src/contracts/harnesses/LinTokenBasedFormulaHarness.sol";
+import {LinTokenBasedFormulaHarness} from "./harnesses/LinTokenBasedFormulaHarness.sol";
 
 contract LinTokenBasedFormulaTest is Test {
     LinTokenBasedFormulaHarness public harness;

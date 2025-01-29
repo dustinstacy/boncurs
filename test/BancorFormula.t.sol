@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-import {BancorFormulaHarness} from "src/contracts/harnesses/BancorFormulaHarness.sol";
+import {BancorFormulaHarness} from "./harnesses/BancorFormulaHarness.sol";
 
 ///@notice Tests to ensure all functions in BancorFormula are working as expected after updates
 contract BancorFormulaTest is Test {
