@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {LinFormulaHarness} from "./harnesses/LinFormulaHarness.sol";
 
 /// @notice Test to ensure that the Linear Formula calculations are correct
