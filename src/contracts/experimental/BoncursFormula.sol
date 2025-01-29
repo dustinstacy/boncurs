@@ -84,7 +84,7 @@ abstract contract BoncursFormula {
      *     @param reserveBalance reserve balance of the token
      *     @param amount amount of tokens to sell
      *
-     *     @return returnToBurn return of the conversion
+     *     @return saleReturn return of the conversion
      */
     function _calculateBoncursSaleReturn(uint256 supply, uint256 reserveBalance, uint256 amount)
         internal

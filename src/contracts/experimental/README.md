@@ -1,6 +1,7 @@
 # Boncurs Curve
 
-**Warning: This contract has not been audited and is not intended for production. Use at your own risk.**
+> [!Warning]
+> This contract has not been audited and is not intended for production. Use at your own risk.
 
 ## Overview
 
