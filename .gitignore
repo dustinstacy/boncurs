@@ -4,7 +4,6 @@ node_modules
 # Forge files
 cache/
 out/
-docs/
 
 # solidity-coverage files
 /coverage
