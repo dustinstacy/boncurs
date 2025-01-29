@@ -1,0 +1,25 @@
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import {ExpTokenBasedFormula} from "../utils/ExpTokenBasedFormula.sol";
+
+/// @notice Used only for testing the ExpTokenBasedFormula contract
+contract ExpTokenBasedFormulaHarness is ExpTokenBasedFormula {
+    function calculateExpTokenBasedPurchaseCost(
+        uint256 supply,
+        uint256 initialCost,
+        uint256 scalingFactor,
+        uint256 amount
+    ) public pure returns (uint256 totalCost) {
+        totalCost = _calculateExpTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
+    }
+
+    function calculateExpTokenBasedSaleReturn(
+        uint256 supply,
+        uint256 initialCost,
+        uint256 scalingFactor,
+        uint256 amount
+    ) public pure returns (uint256 saleReturn) {
+        saleReturn = _calculateExpTokenBasedSaleReturn(supply, initialCost, scalingFactor, amount);
+    }
+}
