@@ -8,7 +8,7 @@ pragma solidity ^0.8.28;
  *         This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
  */
 abstract contract ExpTokenBasedFormula {
-    // Max reserve ratio in parts per million
+    // Max reserve ratio in basis points
     uint32 private constant MAX_SCALE = 1000000; // 10000%
     // Decimal precision (1 Ether)
     uint256 private constant WAD = 10 ** 18;
@@ -18,7 +18,7 @@ abstract contract ExpTokenBasedFormula {
 
     /**
      * @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
-     *     calculates the cost for a given conversion (in the reserve token)
+     *      calculates the cost for a given conversion (in the reserve token)
      *
      *     @param supply token total supply
      *     @param initialCost initial cost of the token

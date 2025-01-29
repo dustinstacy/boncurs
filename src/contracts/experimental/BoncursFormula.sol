@@ -15,10 +15,28 @@ pragma solidity ^0.8.28;
  *         i.e. staking tokens, governance tokens, group membership tokens, game assets, etc.
  */
 abstract contract BoncursFormula {
+    // Minimum scale in basis points. Prevents loss of value
     uint32 constant MIN_SCALE = 10000; // 100%
+    // Maximum scale in basis points
     uint256 constant MAX_SCALE = 1000000; // 10000%
+    // Decimal precision (1 Ether)
     uint256 constant WAD = 10 ** 18;
 
+    // Custom errors
+    error BoncursFormula__InvalidInput();
+
+    /**
+     *  @dev given a token supply, reserve balance, initial cost, scaling factor and a desired amount (in the main token),
+     *       calculates the cost for a given conversion (in the reserve token)
+     *
+     *     @param supply token total supply
+     *     @param reserveBalance reserve balance of the token
+     *     @param initialCost initial cost of the token
+     *     @param scalingFactor scaling factor for the token
+     *     @param amount amount of tokens to purchase
+     *
+     *     @return costToMint cost of the conversion
+     */
     function _calculateBoncursPurchaseCost(
         uint256 supply,
         uint256 reserveBalance,
@@ -26,6 +44,17 @@ abstract contract BoncursFormula {
         uint32 scalingFactor,
         uint256 amount
     ) internal pure returns (uint256 costToMint) {
+        // Validate Input
+        if (initialCost == 0 || scalingFactor < MIN_SCALE || scalingFactor > MAX_SCALE) {
+            revert BoncursFormula__InvalidInput();
+        }
+
+        // If the amount is 0, return 0
+        if (amount == 0) {
+            return 0;
+        }
+
+        // If the supply is 0. Continue on if the amount is greater than 1
         if (supply == 0) {
             costToMint += initialCost;
             reserveBalance += costToMint;
@@ -33,6 +62,8 @@ abstract contract BoncursFormula {
             supply++;
         }
 
+        // Calculate the cost to mint the desired amount of tokens
+        // Need to iterate as the value is dynamic with each mint
         for (uint256 i = 0; i < amount; i++) {
             uint256 value = reserveBalance / supply;
             costToMint += value * scalingFactor / MIN_SCALE;
@@ -43,12 +74,28 @@ abstract contract BoncursFormula {
         return costToMint;
     }
 
-    function _calculateBoncursSaleReturn(uint256 supply, uint256 reserveBalance, uint256 sellAmount)
+    /**
+     *  @dev given a token supply, reserve balance, and a desired sell amount (in the main token),
+     *       calculates the return for a given conversion (in the reserve token)
+     *
+     *     @param supply token total supply
+     *     @param reserveBalance reserve balance of the token
+     *     @param amount amount of tokens to sell
+     *
+     *     @return returnToBurn return of the conversion
+     */
+    function _calculateBoncursSaleReturn(uint256 supply, uint256 reserveBalance, uint256 amount)
         internal
         pure
         returns (uint256)
     {
+        // supply, reserveBalance, and amount must be greater than 0
+        if (supply == 0 || reserveBalance == 0 || amount == 0) {
+            return 0;
+        }
+
+        // Calculate the return for the desired amount of tokens
         uint256 value = reserveBalance / supply;
-        return (value * sellAmount) / WAD;
+        return (value * amount) / WAD;
     }
 }
