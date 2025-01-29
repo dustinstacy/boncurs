@@ -1,0 +1,38 @@
+# Linear Curve
+
+**Warning: This contract has not been audited and is not intended for production. Use at your own risk.**
+
+## Overview
+
+The **LinFormula** contract provides a linear curve-based model for token purchases and sales. It allows for a straightforward conversion between reserve tokens and a main token using a scaling factor, and it operates under a linear pricing model. This simple structure ensures predictability in the price of tokens, making it ideal for use cases where transparency and simplicity are key priorities.
+
+This contract is suitable for projects that need a stable token model with a consistent, linear relationship between the reserve token and the main token's value, including **crowdfunding**, **staking pools**, and **game economies** where a linear growth pattern is desired.
+
+### Key Features
+- **Linear Price Curve:** The token price increases linearly as more tokens are minted. This provides predictable and transparent pricing for users.
+- **Stable Value:** Unlike more complex models with diminishing returns or volatile price fluctuations, the linear model ensures that the price of tokens grows at a constant rate.
+- **Simplicity and Transparency:** With a linear curve, users can easily understand how much they need to invest to purchase a specific number of tokens, and vice versa. There are no complicated formulas or sudden shifts in pricing.
+
+### Use Cases for Linear Curves
+- **Crowdfunding or Token Sales:** Linear curves are often used in token sales or ICOs where the price increases gradually with each token purchased. This ensures that early backers are not punished with extremely high prices while still incentivizing early participation.
+- **Staking and Reward Systems:** Linear curves can be used to calculate rewards for staking, where the value of tokens increases steadily over time as more users participate.
+- **Game Assets:** In game economies where items or assets need to be bought and sold at a predictable rate, a linear pricing model allows for a balanced experience for all players, regardless of when they join the game.
+- **Governance Tokens:** For governance tokens in decentralized autonomous organizations (DAOs), linear price increases help keep the token's price stable and incentivize users to hold rather than frequently trade.
+
+## How It Works
+
+The LinFormula contract provides a straightforward method for calculating the amount of tokens a user can purchase or sell based on the reserve balance and scaling factor. The price of each token increases linearly as the total supply grows, ensuring that the relationship between the reserve balance and token supply remains consistent and predictable.
+
+### Key Concepts:
+- **Scaling Factor:** This factor adjusts the price of each token as the supply increases. It determines the rate at which the token price grows.
+- **Initial Cost:** The starting price of the token, which can be customized according to the project's needs.
+- **Reserve Balance:** The balance of the reserve token that is used to back the value of the main token.
+- **Supply:** The total number of tokens in circulation. As the supply increases, the price of each token increases linearly.
+
+## License
+
+This contract is licensed under the MIT License.
+
+---
+
+By using this contract, you benefit from a transparent, predictable token model that is ideal for simple token economies, staking systems, and predictable crowdfunding models. It is particularly well-suited for use cases where consistent, gradual price increases are desired over time.
