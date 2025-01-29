@@ -247,7 +247,6 @@ abstract contract LinFormula {
         term = term * PURE_LINEAR_SCALE / scalingFactor;
         // term = term * scalingFactor / PURE_LINEAR_SCALE;
         uint256 sqrtTerm;
-        console.log("term: ", term);
 
         // If the term is less than the optimal value, we can use the optimal function for the sqaure root
         // This is computationally more efficient
@@ -260,7 +259,6 @@ abstract contract LinFormula {
 
         // Calculate the difference to determine the amount of whole tokens the deposit can still cover
         tokenCount = sqrtTerm - currentToken;
-        console.log("tokenCount: ", tokenCount);
     }
 
     // as proposed in EIP-7054
