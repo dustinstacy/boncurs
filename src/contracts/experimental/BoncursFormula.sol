@@ -67,8 +67,8 @@ abstract contract BoncursFormula {
         // Calculate the cost to mint the desired amount of tokens
         // Need to iterate as the value is dynamic with each mint
         for (uint256 i = 0; i < amount; i++) {
-            uint256 value = reserveBalance / supply;
-            costToMint += value * scalingFactor / MIN_SCALE;
+            uint256 value = reserveBalance * scalingFactor / supply;
+            costToMint += value / MIN_SCALE;
             reserveBalance += costToMint;
             supply++;
         }
@@ -97,7 +97,7 @@ abstract contract BoncursFormula {
         }
 
         // Calculate the return for the desired amount of tokens
-        uint256 value = reserveBalance / supply;
-        return (value * amount) / WAD;
+        uint256 value = reserveBalance * amount / supply;
+        return value / WAD;
     }
 }
