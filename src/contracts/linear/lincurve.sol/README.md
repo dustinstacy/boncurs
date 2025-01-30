@@ -1,0 +1,2 @@
+# LinCurve.sol
+
