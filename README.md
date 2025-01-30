@@ -1,11 +1,5 @@
 # Boncurs Bonding Curve Library
 
-{% content-ref url="src/contracts/" %}
-[contracts](src/contracts/)
-{% endcontent-ref %}
-
-
-
 [![License](https://img.shields.io/badge/License-MIT-brightgreen)](./#license)
 
 [Overview](./#overview) • [Installation](./#installation) • [Usage](./#usage) • [Tools](./#tools) • [Planned Updates](./#planned-updates) • [Contributing](./#contributing) • [License](./#license)
