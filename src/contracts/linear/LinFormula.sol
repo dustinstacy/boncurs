@@ -147,8 +147,8 @@ abstract contract LinFormula {
         // Determine the current token number, cost, balance, and fragment
         uint256 currentToken = (supply / WAD) + 1;
         uint256 currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialCost);
-        uint256 currentTokenBalance = _totalCostOfTokens(currentToken, scalingFactor, initialCost) - reserveBalance;
-        uint256 currentFragment = WAD - (currentTokenBalance * WAD / currentTokenCost);
+        uint256 currentTokenBalance = reserveBalance - _totalCostOfTokens(currentToken - 1, scalingFactor, initialCost);
+        uint256 currentFragment = (currentTokenBalance * WAD / currentTokenCost);
 
         // If the sell amount is less than the current token fragment, calculate the return based on the current token cost
         uint256 remainingSellAmount = sellAmount;
@@ -200,14 +200,23 @@ abstract contract LinFormula {
      * @param scalingFactor The scaling factor for the token
      * @param initialCost The initial price of the token
      *
-     * @return totalCostOfTokens The total cost of tokens up to the current token
+     * @return tokenCost The total cost of tokens up to the current token
      */
     function _totalCostOfTokens(uint256 currentToken, uint32 scalingFactor, uint256 initialCost)
         internal
         pure
-        returns (uint256)
+        returns (uint256 tokenCost)
     {
-        return ((currentToken * (currentToken + 1) * initialCost) * scalingFactor / 2) / PURE_LINEAR_SCALE;
+        if (currentToken == 1) {
+            return initialCost;
+        } else if (scalingFactor == PURE_LINEAR_SCALE) {
+            ((currentToken * (currentToken + 1) * initialCost) * scalingFactor / 2) / PURE_LINEAR_SCALE;
+        }
+
+        uint256 initialCostAdjustment = _calculateInitialCostAdjustment(initialCost, scalingFactor);
+        uint256 rawCost = (currentToken * (currentToken + 1) * initialCost) * scalingFactor / 2 / PURE_LINEAR_SCALE;
+        tokenCost =
+            (scalingFactor > PURE_LINEAR_SCALE) ? rawCost + initialCostAdjustment : rawCost - initialCostAdjustment;
     }
 
     /**
@@ -224,7 +233,24 @@ abstract contract LinFormula {
         pure
         returns (uint256 currentTokenCost)
     {
-        return initialCost * currentToken * scalingFactor / PURE_LINEAR_SCALE;
+        if (currentToken == 1) {
+            return initialCost;
+        } else if (scalingFactor == PURE_LINEAR_SCALE) {
+            return initialCost * currentToken * scalingFactor / PURE_LINEAR_SCALE;
+        }
+
+        uint256 initialCostAdjustment = _calculateInitialCostAdjustment(initialCost, scalingFactor);
+        uint256 rawCost = initialCost * currentToken * scalingFactor / PURE_LINEAR_SCALE;
+        return (scalingFactor > PURE_LINEAR_SCALE) ? rawCost - initialCostAdjustment : rawCost + initialCostAdjustment;
+    }
+
+    function _calculateInitialCostAdjustment(uint256 initialCost, uint32 scalingFactor)
+        internal
+        pure
+        returns (uint256 initialCostAdjustment)
+    {
+        uint256 scaledInitialCost = initialCost * scalingFactor / PURE_LINEAR_SCALE;
+        return (scalingFactor > PURE_LINEAR_SCALE) ? scaledInitialCost - initialCost : initialCost - scaledInitialCost;
     }
 
     /**

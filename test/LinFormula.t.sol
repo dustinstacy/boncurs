@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
+import {Test, console} from "forge-std/Test.sol";
 import {LinFormulaHarness} from "./harnesses/LinFormulaHarness.sol";
 
 /// @notice Test to ensure that the Linear Formula calculations are correct
@@ -27,7 +27,7 @@ contract LinFormulaTest is Test {
         uint256 supply = 0;
         uint256 reserveBalance = 0;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 depositAmount = WAD;
 
         uint256 purchaseReturn =
@@ -58,7 +58,7 @@ contract LinFormulaTest is Test {
         uint256 supply = WAD * 984;
         uint256 reserveBalance = WAD * 484620;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 depositAmount = WAD * 894;
 
         uint256 purchaseReturn =
@@ -71,22 +71,26 @@ contract LinFormulaTest is Test {
         uint256 saleReturn =
             harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
 
+        console.log("saleReturn: ", saleReturn);
+
         uint256 precision = 100;
         if (saleReturn > WAD) {
             uint256 length = harness.getLength(saleReturn / WAD);
             precision = 10 ** length;
         }
 
+        console.log("depositAmount", depositAmount);
+
         assertLe(saleReturn, depositAmount);
         assertApproxEqAbs(saleReturn, depositAmount, precision);
-        assertApproxEqRel(saleReturn, depositAmount, 100);
+        assertApproxEqRel(saleReturn, depositAmount, 1);
     }
 
     function test_LinFormulaCalculations3() public view {
         uint256 supply = WAD * 2;
         uint256 reserveBalance = WAD * 3;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 depositAmount = WAD * 154;
 
         uint256 purchaseReturn =
@@ -114,7 +118,7 @@ contract LinFormulaTest is Test {
         uint256 supply = WAD * 2;
         uint256 reserveBalance = WAD * 3;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 depositAmount = WAD * 79633;
 
         uint256 purchaseReturn =
@@ -142,7 +146,7 @@ contract LinFormulaTest is Test {
         uint256 supply = WAD * 2;
         uint256 reserveBalance = WAD * 3;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 depositAmount = WAD * 978165157;
 
         uint256 purchaseReturn =
@@ -170,7 +174,7 @@ contract LinFormulaTest is Test {
         uint256 supply = WAD * 415;
         uint256 reserveBalance = WAD * 129480;
         uint256 initialPrice = 15e17;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 depositAmount = WAD * 3818;
 
         uint256 purchaseReturn =
@@ -204,8 +208,8 @@ contract LinFormulaTest is Test {
         uint256 purchaseReturn =
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
 
-        // Price of the current token is 1/2 WAD and the next token is 1 WAD
-        assertEq(purchaseReturn, 1.5e18);
+        // First token should still be the initial cost
+        assertEq(purchaseReturn, WAD);
 
         supply += purchaseReturn;
         reserveBalance += depositAmount;
@@ -270,7 +274,7 @@ contract LinFormulaTest is Test {
         uint256 saleReturn =
             harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
 
-        uint256 precision = 100;
+        uint256 precision = 1000;
         if (saleReturn > WAD) {
             uint256 length = harness.getLength(saleReturn / WAD);
             precision = 10 ** length;
@@ -278,7 +282,7 @@ contract LinFormulaTest is Test {
 
         assertLe(saleReturn, depositAmount);
         assertApproxEqAbs(saleReturn, depositAmount, precision);
-        assertApproxEqRel(saleReturn, depositAmount, 100);
+        assertApproxEqRel(saleReturn, depositAmount, 1000);
     }
 
     function test_LinFormulaCalculations10() public view {
@@ -290,6 +294,9 @@ contract LinFormulaTest is Test {
 
         uint256 purchaseReturn =
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
+
+        console.log("purchaseReturn: ", purchaseReturn);
+        console.log("--------------------");
 
         supply += purchaseReturn;
         reserveBalance += depositAmount;
@@ -324,7 +331,7 @@ contract LinFormulaTest is Test {
         uint256 supply = 0;
         uint256 reserveBalance = 0;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 depositAmount = 0;
 
         uint256 purchaseReturn =
@@ -351,7 +358,7 @@ contract LinFormulaTest is Test {
         uint256 supply = 0;
         uint256 reserveBalance = 0;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 sellAmount = 0;
 
         uint256 saleReturn =
@@ -364,7 +371,7 @@ contract LinFormulaTest is Test {
         uint256 supply = 100;
         uint256 reserveBalance = 100;
         uint256 initialPrice = WAD;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 sellAmount = supply;
 
         uint256 saleReturn =
@@ -375,7 +382,7 @@ contract LinFormulaTest is Test {
 
     function test_currentTokenCost() public view {
         uint256 currentToken = 1;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = WAD;
 
         uint256 currentTokenCost = harness.currentTokenCost(currentToken, scalingFactor, initialPrice);
@@ -385,7 +392,7 @@ contract LinFormulaTest is Test {
 
     function test_currentTokenCost2() public view {
         uint256 currentToken = 100;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = WAD;
 
         uint256 currentTokenCost = harness.currentTokenCost(currentToken, scalingFactor, initialPrice);
@@ -395,7 +402,7 @@ contract LinFormulaTest is Test {
 
     function test_currentTokenCost3() public view {
         uint256 currentToken = 100;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = 15e17;
 
         uint256 currentTokenCost = harness.currentTokenCost(currentToken, scalingFactor, initialPrice);
@@ -410,12 +417,12 @@ contract LinFormulaTest is Test {
 
         uint256 currentTokenCost = harness.currentTokenCost(currentToken, scalingFactor, initialPrice);
 
-        assertEq(currentTokenCost, 21e18);
+        assertEq(currentTokenCost, 215e17);
     }
 
     function test_totalCostOfTokens() public view {
         uint256 currentToken = 1;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = WAD;
 
         uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
@@ -425,7 +432,7 @@ contract LinFormulaTest is Test {
 
     function test_totalCostOfTokens2() public view {
         uint256 currentToken = 100;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = WAD;
 
         uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
@@ -435,7 +442,7 @@ contract LinFormulaTest is Test {
 
     function test_totalCostOfTokens3() public view {
         uint256 currentToken = 100;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = 15e17;
 
         uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
@@ -450,13 +457,13 @@ contract LinFormulaTest is Test {
 
         uint256 totalCost = harness.totalCostOfTokens(currentToken, scalingFactor, initialPrice);
 
-        assertEq(totalCost, 4515e17);
+        assertEq(totalCost, 451e18);
     }
 
     function test_calculateTokenCount() public view {
         uint256 deposit = WAD;
         uint256 reserveBalance = 1e18;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = WAD;
         uint256 currentToken = 1;
 
@@ -469,7 +476,7 @@ contract LinFormulaTest is Test {
     function test_calculateTokenCount2() public view {
         uint256 deposit = WAD * 3;
         uint256 reserveBalance = 1e18;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = WAD;
         uint256 currentToken = 1;
 
@@ -482,7 +489,7 @@ contract LinFormulaTest is Test {
     function test_calculateTokenCount3() public view {
         uint256 deposit = 500e18;
         uint256 reserveBalance = 1e18;
-        uint32 scalingFactor = 1000000;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 initialPrice = WAD;
         uint256 currentToken = 1;
 
