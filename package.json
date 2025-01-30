@@ -1,10 +1,10 @@
 {
-    "name": "boncurs-solidity",
+    "name": "boncurs",
     "description": "Bonding Curve Library for Solidity",
     "version": "0.1.0-alpha.1",
     "private": false,
     "files": [
-        "src/contracts/"
+        "contracts/"
     ],
     "scripts": {
         "build": "forge build",

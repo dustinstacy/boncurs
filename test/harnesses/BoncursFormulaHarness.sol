@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BoncursFormula} from "../../src/contracts/experimental/BoncursFormula.sol";
+import {BoncursFormula} from "../../contracts/experimental/BoncursFormula.sol";
 
 /// @notice Used only for testing the BoncursFormula contract
 contract BoncursFormulaHarness is BoncursFormula {

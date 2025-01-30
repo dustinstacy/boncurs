@@ -30,11 +30,11 @@ Boncurs Bonding Curve Library
 ---
 
 Current avaiable curves: 
-* [Exponential](src/contracts/exponential/ExpCurve.sol) 
-* [Linear](src/contracts/linear/LinCurve.sol) 
-* [Exponential Token Based](src/contracts/exponential/ExpTokenBasedCurve.sol) 
-* [Linear Token Based](src/contracts/linear/LinTokenBasedCurve.sol)
-* [Boncurs Curve](src/contracts/experimental/BoncursCurve.sol)
+* [Exponential](contracts/exponential/ExpCurve.sol) 
+* [Linear](contracts/linear/LinCurve.sol) 
+* [Exponential Token Based](contracts/exponential/ExpTokenBasedCurve.sol) 
+* [Linear Token Based](contracts/linear/LinTokenBasedCurve.sol)
+* [Boncurs Curve](contracts/experimental/BoncursCurve.sol)
 
 ## Installation
 

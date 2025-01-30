@@ -12,4 +12,4 @@ out/
 # development files
 src/dev
 test/dev
-src/contracts/boncurs-contracts-0.1.0-alpha.1.tgz
+contracts/boncurs-contracts-0.1.0-alpha.1.tgz
