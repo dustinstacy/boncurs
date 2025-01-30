@@ -3,19 +3,17 @@ pragma solidity ^0.8.28;
 
 import {console} from "forge-std/console.sol";
 
-/**
- * @title  BoncursFormula
- * @author Dustin Stacy
- * @notice Provides functions for calculating the purchase and sale return values on a uinque curve using a scaling factor
- *         This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
- *
- *         This formula is a custom curve that sees an initial diminishing return on the cost to mint a token, but as the supply increases
- *         and the reserve balance grows, the value of the token increases and cannot go down. Used to reward early adopters and incentivize
- *         the holding of the token. Also, with the way the curve tends to move towards flat over time, it does not punish late adopters.
- *
- *         Great for a token that is meant to be held and not traded often or as a community engagement token.
- *         i.e. staking tokens, governance tokens, group membership tokens, game assets, etc.
- */
+/// @title  BoncursFormula
+/// @author Dustin Stacy
+/// @notice Provides functions for calculating the purchase and sale return values on a uinque curve using a scaling factor
+///     This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
+///
+/// @notice This formula is a custom curve that sees an initial diminishing return on the cost to mint a token, but as the supply increases
+///     and the reserve balance grows, the value of the token increases and cannot go down. Used to reward early adopters and incentivize
+///     the holding of the token. Also, with the way the curve tends to move towards flat over time, it does not punish late adopters.
+///
+/// @dev Great for a token that is meant to be held and not traded often or as a community engagement token.
+///     i.e. staking tokens, governance tokens, group membership tokens, game assets, etc.
 abstract contract BoncursFormula {
     // Minimum scale in basis points. Prevents loss of value
     uint32 constant MIN_SCALE = 10000; // 100%
@@ -27,18 +25,14 @@ abstract contract BoncursFormula {
     // Custom errors
     error BoncursFormula__InvalidInput();
 
-    /**
-     *  @dev given a token supply, reserve balance, initial cost, scaling factor and a desired amount (in the main token),
-     *       calculates the cost for a given conversion (in the reserve token)
-     *
-     *     @param supply token total supply
-     *     @param reserveBalance reserve balance of the token
-     *     @param initialCost initial cost of the token
-     *     @param scalingFactor scaling factor for the token
-     *     @param amount amount of tokens to purchase
-     *
-     *     @return costToMint cost of the conversion
-     */
+    ///@dev given a token supply, reserve balance, initial cost, scaling factor and a desired amount (in the main token),
+    ///     calculates the cost for a given conversion (in the reserve token)
+    /// @param supply token total supply
+    /// @param reserveBalance reserve balance of the token
+    /// @param initialCost initial cost of the token
+    /// @param scalingFactor scaling factor for the token
+    /// @param amount amount of tokens to purchase
+    /// @return costToMint cost of the conversion
     function _calculateBoncursPurchaseCost(
         uint256 supply,
         uint256 reserveBalance,
@@ -76,16 +70,12 @@ abstract contract BoncursFormula {
         return costToMint;
     }
 
-    /**
-     *  @dev given a token supply, reserve balance, and a desired sell amount (in the main token),
-     *       calculates the return for a given conversion (in the reserve token)
-     *
-     *     @param supply token total supply
-     *     @param reserveBalance reserve balance of the token
-     *     @param amount amount of tokens to sell
-     *
-     *     @return saleReturn return of the conversion
-     */
+    /// @dev given a token supply, reserve balance, and a desired sell amount (in the main token),
+    ///       calculates the return for a given conversion (in the reserve token)
+    /// @param supply token total supply
+    /// @param reserveBalance reserve balance of the token
+    /// @param amount amount of tokens to sell
+    /// @return saleReturn return of the conversion
     function _calculateBoncursSaleReturn(uint256 supply, uint256 reserveBalance, uint256 amount)
         internal
         pure

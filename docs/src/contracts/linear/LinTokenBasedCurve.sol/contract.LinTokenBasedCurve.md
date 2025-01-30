@@ -1,5 +1,5 @@
 # LinTokenBasedCurve
-[Git Source](https://github.com/dustinstacy/boncurs/blob/52a092a7ad60aeeee3132e910b32ca470eb8882d/contracts/linear/LinTokenBasedCurve.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/8dd3d6e20d7e085dbf2dccdde2c14001616467cf/contracts/linear/LinTokenBasedCurve.sol)
 
 **Inherits:**
 [LinTokenBasedFormula](/contracts/linear/LinTokenBasedFormula.sol/abstract.LinTokenBasedFormula.md)

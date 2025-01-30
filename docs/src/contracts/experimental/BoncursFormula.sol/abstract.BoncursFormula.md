@@ -1,14 +1,16 @@
 # BoncursFormula
-[Git Source](https://github.com/dustinstacy/boncurs/blob/52a092a7ad60aeeee3132e910b32ca470eb8882d/contracts/experimental/BoncursFormula.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/8dd3d6e20d7e085dbf2dccdde2c14001616467cf/contracts/experimental/BoncursFormula.sol)
 
 **Author:**
 Dustin Stacy
 
 Provides functions for calculating the purchase and sale return values on a uinque curve using a scaling factor
 This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
+
 This formula is a custom curve that sees an initial diminishing return on the cost to mint a token, but as the supply increases
 and the reserve balance grows, the value of the token increases and cannot go down. Used to reward early adopters and incentivize
 the holding of the token. Also, with the way the curve tends to move towards flat over time, it does not punish late adopters.
+
 Great for a token that is meant to be held and not traded often or as a community engagement token.
 i.e. staking tokens, governance tokens, group membership tokens, game assets, etc.
 

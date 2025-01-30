@@ -3,20 +3,17 @@ pragma solidity ^0.8.28;
 
 import {BoncursFormula} from "./BoncursFormula.sol";
 
-/**
- * @title BoncursCurve
- * @notice Used to get the purchase and sale return values for a Boncurs curve
- */
+/// @title BoncursCurve
+/// @author Dustin Stacy
+/// @notice Used to get the purchase and sale return values for a Boncurs curve
 abstract contract BoncursCurve is BoncursFormula {
-    /**
-     *     @param supply token total supply
-     *     @param reserveBalance reserve balance of the token
-     *     @param initialCost initial cost of the token
-     *     @param scalingFactor scaling factor for the token
-     *     @param amount amount of tokens to purchase
-     *
-     *     @return costToMint cost of the conversion
-     */
+    /// Get Purchase Cost for Boncurs Curve
+    /// @param supply token total supply
+    /// @param reserveBalance reserve balance of the token
+    /// @param initialCost initial cost of the token
+    /// @param scalingFactor scaling factor of the curve
+    /// @param amount amount of tokens to purchase
+    /// @return costToMint cost of the conversion
     function getPurchaseCost(
         uint256 supply,
         uint256 reserveBalance,
@@ -27,13 +24,11 @@ abstract contract BoncursCurve is BoncursFormula {
         costToMint = _calculateBoncursPurchaseCost(supply, reserveBalance, initialCost, scalingFactor, amount);
     }
 
-    /**
-     *     @param supply token total supply
-     *     @param reserveBalance reserve balance of the token
-     *     @param sellAmount amount of tokens to sell
-     *
-     *     @return saleReturn return of the conversion
-     */
+    /// Get Sale Return for Boncurs Curve
+    /// @param supply token total supply
+    /// @param reserveBalance reserve balance of the token
+    /// @param sellAmount amount of tokens to sell
+    /// @return saleReturn return of the conversion
     function getSaleReturn(uint256 supply, uint256 reserveBalance, uint256 sellAmount)
         internal
         pure

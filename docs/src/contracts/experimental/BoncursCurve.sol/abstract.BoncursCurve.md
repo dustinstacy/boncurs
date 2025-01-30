@@ -1,14 +1,19 @@
 # BoncursCurve
-[Git Source](https://github.com/dustinstacy/boncurs/blob/52a092a7ad60aeeee3132e910b32ca470eb8882d/contracts/experimental/BoncursCurve.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/8dd3d6e20d7e085dbf2dccdde2c14001616467cf/contracts/experimental/BoncursCurve.sol)
 
 **Inherits:**
 [BoncursFormula](/contracts/experimental/BoncursFormula.sol/abstract.BoncursFormula.md)
+
+**Author:**
+Dustin Stacy
 
 Used to get the purchase and sale return values for a Boncurs curve
 
 
 ## Functions
 ### getPurchaseCost
+
+Get Purchase Cost for Boncurs Curve
 
 
 ```solidity
@@ -27,7 +32,7 @@ function getPurchaseCost(
 |`supply`|`uint256`|token total supply|
 |`reserveBalance`|`uint256`|reserve balance of the token|
 |`initialCost`|`uint256`|initial cost of the token|
-|`scalingFactor`|`uint32`|scaling factor for the token|
+|`scalingFactor`|`uint32`|scaling factor of the curve|
 |`amount`|`uint256`|amount of tokens to purchase|
 
 **Returns**
@@ -38,6 +43,8 @@ function getPurchaseCost(
 
 
 ### getSaleReturn
+
+Get Sale Return for Boncurs Curve
 
 
 ```solidity
