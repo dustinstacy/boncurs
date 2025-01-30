@@ -8,7 +8,6 @@ out/
 # solidity-coverage files
 /coverage
 /coverage.json
-/.nyc_output
 
 # development files
 src/dev
