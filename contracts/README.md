@@ -41,16 +41,8 @@ Current avaiable curves:
 #### Hardhat (npm)
 
 ```
-$ npm install @boncurs/contracts
+$ npm install boncurs
 ```
-
-#### Foundry (git)
-
-```
-$ forge install dustinstacy/boncurs
-```
-
-Add `@boncurs/contracts/=lib/boncurs/contracts/` in `remappings.txt.`
 
 ## Usage
 
