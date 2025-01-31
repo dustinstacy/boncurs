@@ -1,13 +1,13 @@
-# ExpTokenBasedCurve
-[Git Source](https://github.com/dustinstacy/boncurs/blob/02ed8078bd89ba19394d69164a2bad75906f2c24/contracts/exponential/ExpTokenBasedCurve.sol)
+# LinTokenBasedCurve
+[Git Source](https://github.com/dustinstacy/boncurs/blob/6c025f69156de715812d7a6a70f223cf6541ed15/contracts/linear/LinTokenBasedCurve.sol)
 
 **Inherits:**
-[ExpTokenBasedFormula](/contracts/exponential/ExpTokenBasedFormula.sol/abstract.ExpTokenBasedFormula.md)
+[LinTokenBasedFormula](/contracts/linear/LinTokenBasedFormula.sol/abstract.LinTokenBasedFormula.md)
 
 **Author:**
 Dustin Stacy
 
-Used to get the purchase and sale return values for an exponential token-based curve
+Used to get the purchase and sale return values for a linear token-based curve
 
 
 ## Functions

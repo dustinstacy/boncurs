@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
 import {Test, console} from "forge-std/Test.sol";
@@ -71,15 +71,11 @@ contract LinFormulaTest is Test {
         uint256 saleReturn =
             harness.calculateSaleReturn(supply, reserveBalance, initialPrice, scalingFactor, sellAmount);
 
-        console.log("saleReturn: ", saleReturn);
-
         uint256 precision = 100;
         if (saleReturn > WAD) {
             uint256 length = harness.getLength(saleReturn / WAD);
             precision = 10 ** length;
         }
-
-        console.log("depositAmount", depositAmount);
 
         assertLe(saleReturn, depositAmount);
         assertApproxEqAbs(saleReturn, depositAmount, precision);
@@ -294,9 +290,6 @@ contract LinFormulaTest is Test {
 
         uint256 purchaseReturn =
             harness.calculatePurchaseReturn(supply, reserveBalance, initialPrice, scalingFactor, depositAmount);
-
-        console.log("purchaseReturn: ", purchaseReturn);
-        console.log("--------------------");
 
         supply += purchaseReturn;
         reserveBalance += depositAmount;

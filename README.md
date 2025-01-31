@@ -57,7 +57,7 @@ Add `@boncurs/contracts/=lib/boncurs/contracts/` in `remappings.txt.`
 Once installed, you can use the contracts in the library by importing them:
 
 ```solidity
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import {ExpCurve} from "@boncurs/contracts/exponential/ExpCurve.sol";

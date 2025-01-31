@@ -30,15 +30,13 @@ Boncurs Bonding Curve Library
 ---
 
 Current avaiable curves: 
-* [Exponential](contracts/exponential/ExpCurve.sol) 
-* [Linear](contracts/linear/LinCurve.sol) 
-* [Exponential Token Based](contracts/exponential/ExpTokenBasedCurve.sol) 
-* [Linear Token Based](contracts/linear/LinTokenBasedCurve.sol)
-* [Boncurs Curve](contracts/experimental/BoncursCurve.sol)
+* [Exponential](exponential/ExpCurve.sol) 
+* [Linear](linear/LinCurve.sol) 
+* [Exponential Token Based](exponential/ExpTokenBasedCurve.sol) 
+* [Linear Token Based](linear/LinTokenBasedCurve.sol)
+* [Boncurs Curve](experimental/BoncursCurve.sol)
 
 ## Installation
-
-#### Hardhat (npm)
 
 ```
 $ npm install boncurs
@@ -49,7 +47,7 @@ $ npm install boncurs
 Once installed, you can use the contracts in the library by importing them:
 
 ```solidity
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import {ExpCurve} from "@boncurs/contracts/exponential/ExpCurve.sol";

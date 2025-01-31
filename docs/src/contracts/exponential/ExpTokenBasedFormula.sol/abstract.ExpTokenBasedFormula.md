@@ -1,5 +1,5 @@
 # ExpTokenBasedFormula
-[Git Source](https://github.com/dustinstacy/boncurs/blob/02ed8078bd89ba19394d69164a2bad75906f2c24/contracts/exponential/ExpTokenBasedFormula.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/6c025f69156de715812d7a6a70f223cf6541ed15/contracts/exponential/ExpTokenBasedFormula.sol)
 
 **Author:**
 Dustin Stacy

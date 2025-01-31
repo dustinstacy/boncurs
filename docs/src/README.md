@@ -1,26 +1,40 @@
-# Boncurs Bonding Curve Library
+<h1 align="center">
+Boncurs Bonding Curve Library
+</h1>
 
-[![License](https://img.shields.io/badge/License-MIT-brightgreen)](./#license)
+<p align="center">
+   <a href="#license">
+    <img src="https://img.shields.io/badge/License-MIT-brightgreen" alt="License">
+  </a>
+</p>
 
-[Overview](./#overview) • [Installation](./#installation) • [Usage](./#usage) • [Tools](./#tools) • [Planned Updates](./#planned-updates) • [Contributing](./#contributing) • [License](./#license)
+<p align="center">
+  <a href="#overview">Overview</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#tools">Tools</a> •
+  <a href="#planned-updates">Planned Updates</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a>
+</p>
 
-***
+---
 
-> \[!Warning] These contracts have not been audited and are not intended for production. Use at your own risk.
+> [!Warning]
+> These contracts have not been audited and are not intended for production. Use at your own risk.
 
 ## Overview
 
 **A smart contract bonding curve library.** For use with fungible and non-fungible token projects.
 
-***
+---
 
-Current avaiable curves:
-
-* [Exponential](docs/src/contracts/exponential/ExpCurve.sol)
-* [Linear](docs/src/contracts/linear/LinCurve.sol)
-* [Exponential Token Based](docs/src/contracts/exponential/ExpTokenBasedCurve.sol)
-* [Linear Token Based](docs/src/contracts/linear/LinTokenBasedCurve.sol)
-* [Boncurs Curve](docs/src/contracts/experimental/BoncursCurve.sol)
+Current avaiable curves: 
+* [Exponential](contracts/exponential/ExpCurve.sol) 
+* [Linear](contracts/linear/LinCurve.sol) 
+* [Exponential Token Based](contracts/exponential/ExpTokenBasedCurve.sol) 
+* [Linear Token Based](contracts/linear/LinTokenBasedCurve.sol)
+* [Boncurs Curve](contracts/experimental/BoncursCurve.sol)
 
 ## Installation
 
@@ -43,7 +57,7 @@ Add `@boncurs/contracts/=lib/boncurs/contracts/` in `remappings.txt.`
 Once installed, you can use the contracts in the library by importing them:
 
 ```solidity
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import {ExpCurve} from "@boncurs/contracts/exponential/ExpCurve.sol";
@@ -69,24 +83,21 @@ contract ExampleImplementation is ExpCurve {
 ## Planned Updates
 
 #### Curve variety
-
 * Logarithmic
 * Sigmoidal
 * Decaying
 
 #### Tools
-
 * User interface to visualize curves and pricing structure
 * Wizard to implement desired curve into token contracts with presets including:
-  * Fungible tokens
-  * NFTs
-  * Memberships
-  * Governance tokens
-  * Staking tokens
+    * Fungible tokens
+    * NFTs
+    * Memberships
+    * Governance tokens
+    * Staking tokens
 * No code contract deployer
 
 #### Augmentations & Extensions
-
 * Bonding curve inflection points
 * Reserve balance burning/reallocating
 * Protocol fees

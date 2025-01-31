@@ -1,22 +1,18 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
 import {BancorFormula} from "./BancorFormula.sol";
 
-/**
- * @title  LinCurve
- * @author Dustin Stacy
- * @notice Used to get the purchase and sale return values for an exponential curve
- */
-contract ExpCurve is BancorFormula {
-    /**
-     *     @param supply token total supply
-     *     @param reserveBalance reserve balance of the token
-     *     @param reserveRatio reserve ratio of the token
-     *     @param depositAmount amount of tokens to purchase
-     *
-     *     @return purchaseReturn cost of the conversion
-     */
+/// @title  LinCurve
+/// @author Dustin Stacy
+/// @notice Used to get the purchase and sale return values for an exponential curve
+abstract contract ExpCurve is BancorFormula {
+    ///     @param supply token total supply
+    ///     @param reserveBalance reserve balance of the token
+    ///     @param reserveRatio reserve ratio of the token
+    ///     @param depositAmount amount of tokens to purchase
+    ///
+    ///     @return purchaseReturn cost of the conversion
     function getPurchaseReturn(uint256 supply, uint256 reserveBalance, uint32 reserveRatio, uint256 depositAmount)
         internal
         view
@@ -25,14 +21,12 @@ contract ExpCurve is BancorFormula {
         purchaseReturn = _calculateBancorFormulaPurchaseReturn(supply, reserveBalance, reserveRatio, depositAmount);
     }
 
-    /**
-     *     @param supply token total supply
-     *     @param reserveBalance reserve balance of the token
-     *     @param reserveRatio reserve ratio of the token
-     *     @param sellAmount amount of tokens to sell
-     *
-     *     @return saleReturn return of the conversion
-     */
+    ///     @param supply token total supply
+    ///     @param reserveBalance reserve balance of the token
+    ///     @param reserveRatio reserve ratio of the token
+    ///     @param sellAmount amount of tokens to sell
+    ///
+    ///     @return saleReturn return of the conversion
     function getSaleReturn(uint256 supply, uint256 reserveBalance, uint32 reserveRatio, uint256 sellAmount)
         internal
         view

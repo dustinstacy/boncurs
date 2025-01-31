@@ -1,12 +1,10 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-/**
- * @title  ExpTokenBasedFormula
- * @author Dustin Stacy
- * @notice Provides functions for calculating the purchase and sale return values on an exponential token-based curve using a scaling factor
- *         This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
- */
+/// @title  ExpTokenBasedFormula
+/// @author Dustin Stacy
+/// @notice Provides functions for calculating the purchase and sale return values on an exponential token-based curve using a scaling factor
+///         This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
 abstract contract ExpTokenBasedFormula {
     // Max reserve ratio in basis points
     uint32 private constant MAX_SCALE = 1000000; // 10000%
@@ -16,17 +14,15 @@ abstract contract ExpTokenBasedFormula {
     // Custom errors
     error ExpTokenBasedFormula__InvalidInput();
 
-    /**
-     * @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
-     *      calculates the cost for a given conversion (in the reserve token)
-     *
-     *     @param supply token total supply
-     *     @param initialCost initial cost of the token
-     *     @param scalingFactor scaling factor for the token
-     *     @param amount amount of tokens to purchase
-     *
-     *     @return totalCost cost of the conversion
-     */
+    /// @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
+    ///      calculates the cost for a given conversion (in the reserve token)
+    ///
+    ///     @param supply token total supply
+    ///     @param initialCost initial cost of the token
+    ///     @param scalingFactor scaling factor for the token
+    ///     @param amount amount of tokens to purchase
+    ///
+    ///     @return totalCost cost of the conversion
     function _calculateExpTokenBasedPurchaseCost(
         uint256 supply,
         uint256 initialCost,
@@ -59,17 +55,15 @@ abstract contract ExpTokenBasedFormula {
         }
     }
 
-    /**
-     * @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
-     *     calculates the return for a given conversion (in the reserve token)
-     *
-     *     @param supply token total supply
-     *     @param initialCost initial cost of the token
-     *     @param scalingFactor scaling factor for the token
-     *     @param amount amount of tokens to sell
-     *
-     *     @return saleReturn cost of the conversion
-     */
+    /// @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
+    ///     calculates the return for a given conversion (in the reserve token)
+    ///
+    ///     @param supply token total supply
+    ///     @param initialCost initial cost of the token
+    ///     @param scalingFactor scaling factor for the token
+    ///     @param amount amount of tokens to sell
+    ///
+    ///     @return saleReturn cost of the conversion
     function _calculateExpTokenBasedSaleReturn(
         uint256 supply,
         uint256 initialCost,

@@ -1,5 +1,5 @@
 # StdCheatsSafe
-[Git Source](https://github.com/dustinstacy/boncurs/blob/02ed8078bd89ba19394d69164a2bad75906f2c24/lib/forge-std/src/StdCheats.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/6c025f69156de715812d7a6a70f223cf6541ed15/lib/forge-std/src/StdCheats.sol)
 
 
 ## State Variables
@@ -122,6 +122,13 @@ function assumeNotPrecompile(address addr, uint256 chainId) internal pure virtua
 
 ```solidity
 function assumeNotForgeAddress(address addr) internal pure virtual;
+```
+
+### assumeUnusedAddress
+
+
+```solidity
+function assumeUnusedAddress(address addr) internal view virtual;
 ```
 
 ### readEIP1559ScriptArtifact

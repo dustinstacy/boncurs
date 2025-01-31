@@ -1,5 +1,5 @@
 # BancorFormula
-[Git Source](https://github.com/dustinstacy/boncurs/blob/02ed8078bd89ba19394d69164a2bad75906f2c24/contracts/exponential/BancorFormula.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/6c025f69156de715812d7a6a70f223cf6541ed15/contracts/exponential/BancorFormula.sol)
 
 **Author:**
 Bancor
@@ -41,7 +41,7 @@ uint8 private constant MAX_PRECISION = 127;
 
 
 ### FIXED_1
-*The following values are used for precision in the contract's fixed point arithmetic.*
+*The following values are used for precision in the contract's fixed point arithmetic*
 
 *Powers of 2 are computationally efficient because shifting left or right by X is the same as multiplying or dividing by 2^X*
 

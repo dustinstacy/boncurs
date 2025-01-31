@@ -1,12 +1,10 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-/**
- * @title  LinFormula
- * @author Dustin Stacy
- * @notice Provides functions for calculating the purchase and sale return values on a linear curve using a scaling factor
- *         This formula converts a given reserve token amount to a token amount and vice versa
- */
+/// @title  LinFormula
+/// @author Dustin Stacy
+/// @notice Provides functions for calculating the purchase and sale return values on a linear curve using a scaling factor
+///         This formula converts a given reserve token amount to a token amount and vice versa
 abstract contract LinFormula {
     // Max scaling factor in parts per million
     uint32 private constant MAX_SCALE = 100000000; // 10000%
@@ -20,23 +18,21 @@ abstract contract LinFormula {
     // Custom errors
     error LinFormula__InvalidInput();
 
-    /**
-     * @dev given a token supply, reserve balance, initial price, scaling factor and a deposit amount (in the reserve token),
-     *     calculates the return for a given conversion (in the main token)
-     *
-     *     If the deposit amount is less than the current token balance, the return is calculated based on the current token cost.
-     *     If the deposit amount is greater than the current token balance, the variables are caliabrated to move to the next token.
-     *     Then amount of whole tokens the deposit can stil cover is calculated using a sum of an arithmetic series rounded down to the nearest integer.
-     *     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
-     *
-     *     @param supply            token total supply
-     *     @param reserveBalance    total reserve balance
-     *     @param initialCost      initial price of the token
-     *     @param scalingFactor     scaling factor for the token
-     *     @param depositAmount     deposit amount, in reserve token
-     *
-     *     @return purchaseReturn return amount
-     */
+    /// @dev given a token supply, reserve balance, initial price, scaling factor and a deposit amount (in the reserve token),
+    ///     calculates the return for a given conversion (in the main token)
+    ///
+    ///     If the deposit amount is less than the current token balance, the return is calculated based on the current token cost.
+    ///     If the deposit amount is greater than the current token balance, the variables are caliabrated to move to the next token.
+    ///     Then amount of whole tokens the deposit can stil cover is calculated using a sum of an arithmetic series rounded down to the nearest integer.
+    ///     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
+    ///
+    ///     @param supply            token total supply
+    ///     @param reserveBalance    total reserve balance
+    ///     @param initialCost      initial price of the token
+    ///     @param scalingFactor     scaling factor for the token
+    ///     @param depositAmount     deposit amount, in reserve token
+    ///
+    ///     @return purchaseReturn return amount
     function _calculateLinPurchaseReturn(
         uint256 supply,
         uint256 reserveBalance,
@@ -104,24 +100,21 @@ abstract contract LinFormula {
         return purchaseReturn;
     }
 
-    /**
-     * @dev given a token supply, reserve balance, initial price, scaling factor and a sell amount (in the main token),
-     *     calculates the return for a given conversion (in the reserve token)
-     *
-     *     If the sell amount is less than the current token fragment, the return is calculated based on the current token cost.
-     *     If the sell amount is greater than the current token fragment, the variables are calibrated to move to the previous token.
-     *     Then the amount of whole tokens left in the sale is converted to the reserve token and added to the return.
-     *     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
-     *
-     *     @param supply            token total supply
-     *     @param reserveBalance    total reserve
-     *     @param initialCost      initial price of the token
-     *     @param scalingFactor     scaling factor for the token
-     *     @param sellAmount        sell amount, in the token itself
-     *
-     *
-     *    @return saleReturn return amount
-     */
+    /// @dev given a token supply, reserve balance, initial price, scaling factor and a sell amount (in the main token),
+    ///     calculates the return for a given conversion (in the reserve token)
+    ///
+    ///     If the sell amount is less than the current token fragment, the return is calculated based on the current token cost.
+    ///     If the sell amount is greater than the current token fragment, the variables are calibrated to move to the previous token.
+    ///     Then the amount of whole tokens left in the sale is converted to the reserve token and added to the return.
+    ///     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
+    ///
+    ///     @param supply            token total supply
+    ///     @param reserveBalance    total reserve
+    ///     @param initialCost      initial price of the token
+    ///     @param scalingFactor     scaling factor for the token
+    ///     @param sellAmount        sell amount, in the token itself
+    ///
+    ///    @return saleReturn return amount
     function _calculateLinSaleReturn(
         uint256 supply,
         uint256 reserveBalance,
@@ -193,15 +186,13 @@ abstract contract LinFormula {
         return saleReturn;
     }
 
-    /**
-     * Calculate the total cost of tokens up to the current token
-     *
-     * @param currentToken The current token number
-     * @param scalingFactor The scaling factor for the token
-     * @param initialCost The initial price of the token
-     *
-     * @return tokenCost The total cost of tokens up to the current token
-     */
+    /// Calculate the total cost of tokens up to the current token
+    ///
+    /// @param currentToken The current token number
+    /// @param scalingFactor The scaling factor for the token
+    /// @param initialCost The initial price of the token
+    ///
+    /// @return tokenCost The total cost of tokens up to the current token
     function _totalCostOfTokens(uint256 currentToken, uint32 scalingFactor, uint256 initialCost)
         internal
         pure
@@ -219,15 +210,13 @@ abstract contract LinFormula {
             (scalingFactor > PURE_LINEAR_SCALE) ? rawCost + initialCostAdjustment : rawCost - initialCostAdjustment;
     }
 
-    /**
-     * Calculate the current token cost
-     *
-     * @param currentToken The current token number
-     * @param scalingFactor The scaling factor for the token
-     * @param initialCost The initial price of the token
-     *
-     * @return currentTokenCost The current token cost
-     */
+    /// Calculate the current token cost
+    ///
+    /// @param currentToken The current token number
+    /// @param scalingFactor The scaling factor for the token
+    /// @param initialCost The initial price of the token
+    ///
+    /// @return currentTokenCost The current token cost
     function _currentTokenCost(uint256 currentToken, uint32 scalingFactor, uint256 initialCost)
         internal
         pure
@@ -253,16 +242,14 @@ abstract contract LinFormula {
         return (scalingFactor > PURE_LINEAR_SCALE) ? scaledInitialCost - initialCost : initialCost - scaledInitialCost;
     }
 
-    /**
-     * Calculate the amount of whole tokens the deposit can still cover
-     *
-     * @param depositAmount The deposit amount, in reserve token
-     * @param reserveBalance The total reserve balance
-     * @param initialCost The initial price of the token
-     * @param currentToken The current token number
-     *
-     * @return tokenCount The amount of whole tokens the deposit can still cover
-     */
+    /// Calculate the amount of whole tokens the deposit can still cover
+    ///
+    /// @param depositAmount The deposit amount, in reserve token
+    /// @param reserveBalance The total reserve balance
+    /// @param initialCost The initial price of the token
+    /// @param currentToken The current token number
+    ///
+    /// @return tokenCount The amount of whole tokens the deposit can still cover
     function _calculateTokenCount(
         uint256 depositAmount,
         uint256 reserveBalance,
@@ -274,7 +261,6 @@ abstract contract LinFormula {
 
         uint256 term = (2 * ((depositAmount + reserveBalance) * scalingFactor) + WAD) / initialCost / scalingFactor;
         term = term * PURE_LINEAR_SCALE / scalingFactor;
-        // term = term * scalingFactor / PURE_LINEAR_SCALE;
         uint256 sqrtTerm;
 
         // If the term is less than the optimal value, we can use the optimal function for the sqaure root

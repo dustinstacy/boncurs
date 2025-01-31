@@ -1,12 +1,10 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-/**
- * @title  LinTokenBasedFormula
- * @author Dustin Stacy
- * @notice Provides functions for calculating the purchase and sale return values on a linear token-based curve using a scaling factor
- *         This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
- */
+/// @title  LinTokenBasedFormula
+/// @author Dustin Stacy
+/// @notice Provides functions for calculating the purchase and sale return values on a linear token-based curve using a scaling factor
+///         This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
 abstract contract LinTokenBasedFormula {
     // Max scaling factor in basis points
     uint32 private constant MAX_SCALE = 1000000; // 10000%
@@ -18,17 +16,15 @@ abstract contract LinTokenBasedFormula {
     // Custom errors
     error LinTokenBasedFormula__InvalidInput();
 
-    /**
-     * @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
-     *     calculates the cost for a given conversion (in the reserve token)
-     *
-     *     @param supply token total supply
-     *     @param initialCost initial cost of the token
-     *     @param scalingFactor scaling factor for the token
-     *     @param amount amount of tokens to purchase
-     *
-     *     @return totalCost cost of the conversion
-     */
+    /// @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
+    ///     calculates the cost for a given conversion (in the reserve token)
+    ///
+    ///     @param supply token total supply
+    ///     @param initialCost initial cost of the token
+    ///     @param scalingFactor scaling factor for the token
+    ///     @param amount amount of tokens to purchase
+    ///
+    ///     @return totalCost cost of the conversion
     function _calculateLinTokenBasedPurchaseCost(
         uint256 supply,
         uint256 initialCost,
@@ -69,17 +65,16 @@ abstract contract LinTokenBasedFormula {
             (scalingFactor > PURE_LINEAR_SCALE) ? rawCost - initialAdjustmentTotal : rawCost + initialAdjustmentTotal;
     }
 
-    /**
-     * @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
-     *     calculates the return for a given conversion (in the reserve token)
-     *
-     *     @param supply token total supply
-     *     @param initialCost initial cost of the token
-     *     @param scalingFactor scaling factor for the token
-     *     @param amount amount of tokens to sell
-     *
-     *     @return saleReturn cost of the conversion
-     */
+    /// @dev given a token supply, initial price, scaling factor and a desired amount (in the main token),
+    ///     calculates the return for a given conversion (in the reserve token)
+    ///
+    ///     @param supply token total supply
+    ///     @param initialCost initial cost of the token
+    ///     @param scalingFactor scaling factor for the token
+    ///     @param amount amount of tokens to sell
+    ///
+    ///     @return saleReturn cost of the conversion
+
     function _calculateLinTokenBasedSaleReturn(
         uint256 supply,
         uint256 initialCost,

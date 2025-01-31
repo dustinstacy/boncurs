@@ -1,7 +1,5 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
-
-import {console} from "forge-std/console.sol";
 
 /// @title  BoncursFormula
 /// @author Dustin Stacy
@@ -32,6 +30,7 @@ abstract contract BoncursFormula {
     /// @param initialCost initial cost of the token
     /// @param scalingFactor scaling factor for the token
     /// @param amount amount of tokens to purchase
+    ///
     /// @return costToMint cost of the conversion
     function _calculateBoncursPurchaseCost(
         uint256 supply,
@@ -75,6 +74,7 @@ abstract contract BoncursFormula {
     /// @param supply token total supply
     /// @param reserveBalance reserve balance of the token
     /// @param amount amount of tokens to sell
+    ///
     /// @return saleReturn return of the conversion
     function _calculateBoncursSaleReturn(uint256 supply, uint256 reserveBalance, uint256 amount)
         internal
