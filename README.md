@@ -36,7 +36,7 @@ $ npm install boncurs
 $ forge install dustinstacy/boncurs
 ```
 
-Add `@boncurs/contracts/=lib/boncurs/contracts/` in `remappings.txt.`
+Add `@boncurs/=lib/boncurs/` in `remappings.txt.`
 
 ## Usage
 
