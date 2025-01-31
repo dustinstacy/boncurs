@@ -1,2 +1,0 @@
-# BancorFormulaHarness.sol
-

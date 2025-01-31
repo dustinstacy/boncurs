@@ -1,2 +1,0 @@
-# LinTokenBasedFormula.t.sol
-

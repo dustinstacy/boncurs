@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-MIT-brightgreen)](./#license)
 
-[Overview](./#overview) • [Installation](./#installation) • [Usage](./#usage) • [Tools](./#tools) • [Planned Updates](./#planned-updates) • [Contributing](./#contributing) • [License](./#license)
+[Overview](./#overview) • [Installation](./#installation) • [Usage](./#usage) • [Tools](./#tools) •  [License](./#license)
 
 ***
 
@@ -16,11 +16,11 @@
 
 Current avaiable curves:
 
-* [Exponential](docs/src/contracts/exponential/ExpCurve.sol)
-* [Linear](docs/src/contracts/linear/LinCurve.sol)
-* [Exponential Token Based](docs/src/contracts/exponential/ExpTokenBasedCurve.sol)
-* [Linear Token Based](docs/src/contracts/linear/LinTokenBasedCurve.sol)
-* [Boncurs Curve](docs/src/contracts/experimental/BoncursCurve.sol)
+* Exponential
+* Linear
+* Exponential Token Based
+* Linear Token Based
+* Boncurs Curve
 
 ## Installation
 
@@ -65,42 +65,6 @@ contract ExampleImplementation is ExpCurve {
 ## Tools
 
 [Boncurs Bonding Curve Tools](https://github.com/dustinstacy/boncurs-tools)
-
-## Planned Updates
-
-#### Curve variety
-
-* Logarithmic
-* Sigmoidal
-* Decaying
-
-#### Tools
-
-* User interface to visualize curves and pricing structure
-* Wizard to implement desired curve into token contracts with presets including:
-  * Fungible tokens
-  * NFTs
-  * Memberships
-  * Governance tokens
-  * Staking tokens
-* No code contract deployer
-
-#### Augmentations & Extensions
-
-* Bonding curve inflection points
-* Reserve balance burning/reallocating
-* Protocol fees
-* Upgradeability
-* Treasury contract
-* Vesting implementations
-
-## Contributing
-
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request
 
 ## License
 

@@ -1,2 +1,0 @@
-# BoncursFormula.t.sol
-

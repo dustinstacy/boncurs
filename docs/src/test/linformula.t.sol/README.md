@@ -1,2 +1,0 @@
-# LinFormula.t.sol
-
