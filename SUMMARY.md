@@ -1,7 +1,6 @@
 # Table of contents
 
 * [Boncurs Bonding Curve Library](README.md)
-* [Boncurs Bonding Curve Library](contracts/README.md)
 * [docs](docs/README.md)
   * [Boncurs Bonding Curve Library](docs/src/README.md)
     * [SUMMARY](docs/src/SUMMARY.md)
