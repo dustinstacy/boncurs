@@ -6,7 +6,9 @@
 
 ***
 
-> \[!Warning] These contracts have not been audited and are not intended for production. Use at your own risk.
+> [!WARNING]
+> These contracts have not been audited and are not intended for production.
+> Use at your own risk.
 
 ## Overview
 
