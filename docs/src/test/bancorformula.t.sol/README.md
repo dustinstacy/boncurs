@@ -1,2 +1,0 @@
-# BancorFormula.t.sol
-

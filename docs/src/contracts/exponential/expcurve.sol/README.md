@@ -1,2 +1,0 @@
-# ExpCurve.sol
-

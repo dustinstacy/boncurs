@@ -1,2 +1,0 @@
-# ExpTokenBasedFormula.t.sol
-

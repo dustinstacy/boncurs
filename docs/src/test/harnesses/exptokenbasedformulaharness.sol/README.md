@@ -1,2 +1,0 @@
-# ExpTokenBasedFormulaHarness.sol
-
