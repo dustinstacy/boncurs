@@ -1,11 +1,11 @@
 # BoncursFormula
-[Git Source](https://github.com/dustinstacy/boncurs/blob/6c025f69156de715812d7a6a70f223cf6541ed15/contracts/experimental/BoncursFormula.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/415e7d62135e63eb569b341e480848bbb293bfa1/contracts/experimental/BoncursFormula.sol)
 
 **Author:**
 Dustin Stacy
 
-Provides functions for calculating the purchase and sale return values on a uinque curve using a scaling factor
-This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return
+Provides functions for calculating the purchase and sale return values on a uinque curve using a scaling factor.
+This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return.
 
 This formula is a custom curve that sees an initial diminishing return on the cost to mint a token, but as the supply increases
 and the reserve balance grows, the value of the token increases and cannot go down. Used to reward early adopters and incentivize
@@ -17,6 +17,8 @@ i.e. staking tokens, governance tokens, group membership tokens, game assets, et
 
 ## State Variables
 ### MIN_SCALE
+*Minimum scale in basis points. Prevents loss of value.*
+
 
 ```solidity
 uint32 constant MIN_SCALE = 10000;
@@ -24,6 +26,8 @@ uint32 constant MIN_SCALE = 10000;
 
 
 ### MAX_SCALE
+*Maximum scale in basis points.*
+
 
 ```solidity
 uint256 constant MAX_SCALE = 1000000;
@@ -31,6 +35,8 @@ uint256 constant MAX_SCALE = 1000000;
 
 
 ### WAD
+*Wei as decimal precision for calculations.*
+
 
 ```solidity
 uint256 constant WAD = 10 ** 18;
@@ -41,7 +47,7 @@ uint256 constant WAD = 10 ** 18;
 ### _calculateBoncursPurchaseCost
 
 *given a token supply, reserve balance, initial cost, scaling factor and a desired amount (in the main token),
-calculates the cost for a given conversion (in the reserve token)*
+calculates the cost for a given conversion (in the reserve token).*
 
 
 ```solidity

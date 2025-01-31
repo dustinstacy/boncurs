@@ -1,5 +1,5 @@
 # BoncursCurve
-[Git Source](https://github.com/dustinstacy/boncurs/blob/6c025f69156de715812d7a6a70f223cf6541ed15/contracts/experimental/BoncursCurve.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/415e7d62135e63eb569b341e480848bbb293bfa1/contracts/experimental/BoncursCurve.sol)
 
 **Inherits:**
 [BoncursFormula](/contracts/experimental/BoncursFormula.sol/abstract.BoncursFormula.md)
@@ -13,7 +13,7 @@ Used to get the purchase and sale return values for a Boncurs curve.
 ## Functions
 ### getPurchaseCost
 
-Get Purchase Cost for Boncurs Curve.
+Get the purchase cost using a Boncurs Curve.
 
 
 ```solidity
@@ -44,7 +44,7 @@ function getPurchaseCost(
 
 ### getSaleReturn
 
-Get Sale Return for Boncurs Curve
+Get the sale return using a Boncurs Curve.
 
 
 ```solidity

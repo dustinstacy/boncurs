@@ -1,5 +1,5 @@
 # ExpCurve
-[Git Source](https://github.com/dustinstacy/boncurs/blob/6c025f69156de715812d7a6a70f223cf6541ed15/contracts/exponential/ExpCurve.sol)
+[Git Source](https://github.com/dustinstacy/boncurs/blob/415e7d62135e63eb569b341e480848bbb293bfa1/contracts/exponential/ExpCurve.sol)
 
 **Inherits:**
 [BancorFormula](/contracts/exponential/BancorFormula.sol/abstract.BancorFormula.md)
