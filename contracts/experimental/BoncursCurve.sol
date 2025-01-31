@@ -7,7 +7,7 @@ import {BoncursFormula} from "./BoncursFormula.sol";
 /// @author Dustin Stacy
 /// @notice Used to get the purchase and sale return values for a Boncurs curve.
 abstract contract BoncursCurve is BoncursFormula {
-    /// Get Purchase Cost for Boncurs Curve.
+    /// Get the purchase cost using a Boncurs Curve.
     /// @param supply token total supply
     /// @param reserveBalance reserve balance of the token
     /// @param initialCost initial cost of the token
@@ -25,7 +25,7 @@ abstract contract BoncursCurve is BoncursFormula {
         costToMint = _calculateBoncursPurchaseCost(supply, reserveBalance, initialCost, scalingFactor, amount);
     }
 
-    /// Get Sale Return for Boncurs Curve
+    /// Get the sale return using a Boncurs Curve.
     /// @param supply token total supply
     /// @param reserveBalance reserve balance of the token
     /// @param sellAmount amount of tokens to sell
