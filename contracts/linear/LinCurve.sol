@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {LinFormula} from "./LinFormula.sol";
+import {LinFormula} from "./utils/LinFormula.sol";
 
 /// @title  LinCurve
 /// @notice This contract is used to get the purchase and sale return values for a linear curve.

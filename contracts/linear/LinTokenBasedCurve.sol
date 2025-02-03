@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {LinTokenBasedFormula} from "./LinTokenBasedFormula.sol";
+import {LinTokenBasedFormula} from "./utils/LinTokenBasedFormula.sol";
 
 /// @title LinTokenBasedCurve
 /// @notice This contract is used to get the purchase and sale return values for a linear token based curve.

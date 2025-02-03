@@ -2,16 +2,11 @@
 pragma solidity ^0.8.28;
 
 /// @title  BoncursFormula
-/// @author Dustin Stacy
-/// @notice Provides functions for calculating the purchase and sale return values on a uinque curve using a scaling factor.
-///     This formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return.
-///
+/// @notice This contract provides functions for calculating the purchase and sale return values on a uinque curve using a scaling factor.
+///     The formula converts a desired token amount into a reserve token cost and the sale of a token amount into a reserve token return.
 /// @notice This formula is a custom curve that sees an initial diminishing return on the cost to mint a token, but as the supply increases
 ///     and the reserve balance grows, the value of the token increases and cannot go down. Used to reward early adopters and incentivize
 ///     the holding of the token. Also, with the way the curve tends to move towards flat over time, it does not punish late adopters.
-///
-/// @dev Great for a token that is meant to be held and not traded often or as a community engagement token.
-///     i.e. staking tokens, governance tokens, group membership tokens, game assets, etc.
 abstract contract BoncursFormula {
     ///@dev Minimum scale in basis points. Prevents loss of value.
     uint32 constant MIN_SCALE = 10000; // 100%
@@ -23,23 +18,20 @@ abstract contract BoncursFormula {
     // Custom errors
     error BoncursFormula__InvalidInput();
 
-    ///@dev given a token supply, reserve balance, initial cost, scaling factor and a desired amount (in the main token),
-    ///     calculates the cost for a given conversion (in the reserve token).
-    ///
+    /// @notice Returns the purchase cost for a given conversion (in the reserve token) for a desired amount (in the main token).
     /// @param supply token total supply
-    /// @param reserveBalance reserve balance of the token
+    /// @param reserveBalance current balance of the reserve token
     /// @param initialCost initial cost of the token
     /// @param scalingFactor scaling factor for the token
     /// @param amount amount of tokens to purchase
-    ///
-    /// @return costToMint cost of the conversion
+    /// @return purchaseCost cost of the conversion
     function _calculateBoncursPurchaseCost(
         uint256 supply,
         uint256 reserveBalance,
         uint256 initialCost,
         uint32 scalingFactor,
         uint256 amount
-    ) internal pure returns (uint256 costToMint) {
+    ) internal pure returns (uint256 purchaseCost) {
         // Validate input
         if (initialCost == 0 || scalingFactor < MIN_SCALE || scalingFactor > MAX_SCALE) {
             revert BoncursFormula__InvalidInput();
@@ -50,10 +42,10 @@ abstract contract BoncursFormula {
             return 0;
         }
 
-        // If the supply is 0. Continue on if the amount is greater than 1
+        // If the supply is 0, start with initialCost. Continue on if the amount is greater than 1
         if (supply == 0) {
-            costToMint += initialCost;
-            reserveBalance += costToMint;
+            purchaseCost += initialCost;
+            reserveBalance += purchaseCost;
             amount--;
             supply++;
         }
@@ -62,21 +54,18 @@ abstract contract BoncursFormula {
         // Need to iterate as the value is dynamic with each mint
         for (uint256 i = 0; i < amount; i++) {
             uint256 value = reserveBalance * scalingFactor / supply;
-            costToMint += value / MIN_SCALE;
-            reserveBalance += costToMint;
+            purchaseCost += value / MIN_SCALE;
+            reserveBalance += purchaseCost;
             supply++;
         }
 
-        return costToMint;
+        return purchaseCost;
     }
 
-    /// @dev given a token supply, reserve balance, and a desired sell amount (in the main token),
-    ///       calculates the return for a given conversion (in the reserve token)
-    ///
+    /// @notice Returns the sale value for an amount (in the main token) with a conversion to the reserve token.
     /// @param supply token total supply
-    /// @param reserveBalance reserve balance of the token
+    /// @param reserveBalance current balance of the reserve token
     /// @param amount amount of tokens to sell
-    ///
     /// @return saleReturn return of the conversion
     function _calculateBoncursSaleReturn(uint256 supply, uint256 reserveBalance, uint256 amount)
         internal

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ExpTokenBasedFormula} from "./ExpTokenBasedFormula.sol";
+import {ExpTokenBasedFormula} from "./utils/ExpTokenBasedFormula.sol";
 
 /// @title ExpTokenBasedCurve
 /// @notice This contract is used to get the purchase and sale return values for an exponential token based curve.

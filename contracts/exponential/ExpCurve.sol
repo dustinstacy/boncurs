@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BancorFormula} from "./BancorFormula.sol";
+import {BancorFormula} from "./utils/BancorFormula.sol";
 
 /// @title  ExpCurve
 /// @notice This contract is used to get the purchase and sale return values for an exponential curve.

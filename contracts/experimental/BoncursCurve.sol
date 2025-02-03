@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BoncursFormula} from "./BoncursFormula.sol";
+import {BoncursFormula} from "./utils/BoncursFormula.sol";
 
 /// @title BoncursCurve
 /// @notice This contract is used to get the purchase and sale return values for a Boncurs curve.

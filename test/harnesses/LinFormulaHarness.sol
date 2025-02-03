@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {LinFormula} from "../../contracts/linear/LinFormula.sol";
+import {LinFormula} from "../../contracts/linear/utils/LinFormula.sol";
 
 /// @notice Used only for testing the LinFormula contract
 contract LinFormulaHarness is LinFormula {

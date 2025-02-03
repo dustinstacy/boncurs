@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ExpTokenBasedFormula} from "../../contracts/exponential/ExpTokenBasedFormula.sol";
+import {ExpTokenBasedFormula} from "../../contracts/exponential/utils/ExpTokenBasedFormula.sol";
 
 /// @notice Used only for testing the ExpTokenBasedFormula contract
 contract ExpTokenBasedFormulaHarness is ExpTokenBasedFormula {
