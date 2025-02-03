@@ -11,7 +11,7 @@ abstract contract BoncursFormula {
     ///@dev Minimum scale in basis points. Prevents loss of value.
     uint32 constant MIN_SCALE = 10000; // 100%
     ///@dev Maximum scale in basis points.
-    uint256 constant MAX_SCALE = 1000000; // 10000%
+    uint32 constant MAX_SCALE = 1000000; // 10000%
     ///@dev Wei as decimal precision for calculations.
     uint256 constant WAD = 10 ** 18;
 
@@ -22,7 +22,7 @@ abstract contract BoncursFormula {
     /// @param supply token total supply
     /// @param reserveBalance current balance of the reserve token
     /// @param initialCost initial cost of the token
-    /// @param scalingFactor scaling factor for the token
+    /// @param scalingFactor scaling factor, represented in basis points, 1-10000
     /// @param amount amount of tokens to purchase
     /// @return purchaseCost cost of the conversion
     function _calculateBoncursPurchaseCost(
@@ -62,7 +62,7 @@ abstract contract BoncursFormula {
         return purchaseCost;
     }
 
-    /// @notice Returns the sale value for an amount (in the main token) with a conversion to the reserve token.
+    /// @notice Returns the sale value for a given amount (in the main token) as a conversion into the reserve token.
     /// @param supply token total supply
     /// @param reserveBalance current balance of the reserve token
     /// @param amount amount of tokens to sell

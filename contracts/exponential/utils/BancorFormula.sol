@@ -3,34 +3,40 @@ pragma solidity ^0.8.28;
 
 /// @title  BancorFormula
 /// @author Bancor
-/// @notice Provides functions for calculating the purchase and sale return values on a linear curve using a scaling factor
-///         This formula converts a given reserve token amount to a token amount and vice versa
+/// @notice This contract provides functions for calculating the purchase and sale return values on an exponential curve using a reserve ratio.
+///     The formula converts a given reserve token amount into a token return and the sale of a token amount into a reserve token return.
 ///
-///         This is an updated version of the BancorFormula contract from the Bancor Protocol
-///         Editted to be compatible with Solidity 0.8.28
-///         See README.md for detailed changes
+/// @dev This is an updated version of the BancorFormula contract from the Bancor Protocol.
+///     Editted to be compatible with Solidity 0.8.28.
+///     See README.md for detailed changes.
 abstract contract BancorFormula {
-    uint256 private constant ONE = 1;
-    // Max reserve ratio in parts per million
-    uint32 private constant MAX_RATIO = 1000000;
-    // Minimum precision index in the maxExpArray
+    /// @dev Minimum precision index in the maxExpArray
     uint8 private constant MIN_PRECISION = 32;
-    // Maximum precision index in the maxExpArray
+    /// @dev Maximum precision index in the maxExpArray
     uint8 private constant MAX_PRECISION = 127;
+    /// @dev Max reserve ratio in parts per million
+    uint32 private constant MAX_RATIO = 1000000; // 100%
+    /// @dev Constant variable for 1
+    uint256 private constant ONE = 1;
 
-    /// @dev The following values are used for precision in the contract's fixed point arithmetic
-    /// @dev Powers of 2 are computationally efficient because shifting left or right by X is the same as multiplying or dividing by 2^X
-    uint256 private constant FIXED_1 = 0x080000000000000000000000000000000; // 2^127 or 1.7014e38
-    uint256 private constant FIXED_2 = 0x100000000000000000000000000000000; // 2^128 or 3.4028e38
-    /// @dev Value is capped to prevent overflow
-    uint256 private constant MAX_NUM = 0x200000000000000000000000000000000; // 2^129 or 6.8056e38
+    /// @dev The following values are used for precision in the contract's fixed point arithmetic.
+    ///     Powers of 2 are computationally efficient because shifting left or right by X is the same as multiplying or dividing by 2^X.
 
-    /// @dev Used to convert from base 2 to natural logarithm
+    /// @dev Represents 2 to the power of 127 or 1.7014e38
+    uint256 private constant FIXED_1 = 0x080000000000000000000000000000000;
+    /// @dev Represents 2 to the power of 128 or 3.4028e38
+    uint256 private constant FIXED_2 = 0x100000000000000000000000000000000;
+    /// @dev Represents 2 to the power of 129 or 6.8056e38
+    uint256 private constant MAX_NUM = 0x200000000000000000000000000000000;
+
+    /// @dev Numerator used to convert from base 2 to natural logarithm
     uint256 private constant LN2_NUMERATOR = 0x3f80fe03f80fe03f80fe03f80fe03f8;
+    /// @dev Denominator used to convert from base 2 to natural logarithm
     uint256 private constant LN2_DENOMINATOR = 0x5b9de1d10bf4103d647b0955897ba80;
 
-    /// @dev Values that represent the point at which the optimal function approximations are still effective
+    /// @dev Max value at which the _optimalLog function approximations are still effective
     uint256 private constant OPT_LOG_MAX_VAL = 0x15bf0a8b1457695355fb8ac404e7a79e3;
+    /// @dev Max value at which the _optimalExp function approximations are still effective
     uint256 private constant OPT_EXP_MAX_VAL = 0x800000000000000000000000000000000;
 
     /// @dev The array of values used to find the precision needed for the given input
@@ -39,8 +45,8 @@ abstract contract BancorFormula {
     // Custom error messages
     error BancorFormula__InvalidInput();
 
-    /// @dev Since maxExpArray is a fixed-size array, we need to initialize it in the constructor
-    ///      To expand the array at the cost of higher gas fees, uncomment the following lines
+    /// @dev Since maxExpArray is a fixed-size array, we need to initialize it in the constructor.
+    ///      To expand the array at the cost of higher gas fees, uncomment the following lines.
     constructor() {
         //  maxExpArray[  0] = 0x6bffffffffffffffffffffffffffffffff;
         //  maxExpArray[  1] = 0x67ffffffffffffffffffffffffffffffff;
@@ -172,35 +178,31 @@ abstract contract BancorFormula {
         maxExpArray[127] = 0x00857ddf0117efa215952912839f6473e6;
     }
 
-    /// @dev given a token supply, reserve balance, ratio and a deposit amount (in the reserve token),
-    ///     calculates the return for a given conversion (in the main token)
-    ///
-    ///     Formula:
+    /// @notice Returns the purchase value for a given amount (in the reserve token) as a conversion into the main token.
+    /// @notice Formula:
     ///     Return = supply * ((1 + depositAmount / reserveBalance) ^ (reserveRatio / 1000000) - 1)
-    ///
-    ///     @param supply            token total supply
-    ///     @param reserveBalance    total reserve balance
-    ///     @param reserveRatio      reserve ratio, represented in ppm, 1-1000000
-    ///     @param depositAmount     deposit amount, in reserve token
-    ///
-    ///     @return purchaseReturn return amount
+    /// @param supply token total supply
+    /// @param reserveBalance balance of reserve token
+    /// @param reserveRatio reserve ratio, represented in ppm, 1-1000000
+    /// @param depositAmount deposit amount, in reserve token
+    /// @return purchaseReturn return of the conversion
     function _calculateBancorFormulaPurchaseReturn(
         uint256 supply,
         uint256 reserveBalance,
         uint32 reserveRatio,
         uint256 depositAmount
     ) internal view returns (uint256 purchaseReturn) {
-        // validate input
+        // Validate input
         if (supply == 0 || reserveBalance == 0 || reserveRatio == 0 || reserveRatio > MAX_RATIO) {
             revert BancorFormula__InvalidInput();
         }
 
-        // special case for 0 deposit amount
+        // Special case for 0 deposit amount
         if (depositAmount == 0) {
             return 0;
         }
 
-        // special case if the ratio = 100%
+        // Special case if the ratio = 100%
         if (reserveRatio == MAX_RATIO) {
             return (supply * depositAmount) / reserveBalance;
         }
@@ -215,41 +217,37 @@ abstract contract BancorFormula {
         return temp - supply;
     }
 
-    /// @dev given a token supply, reserve balance, ratio and a sell amount (in the main token),
-    ///     calculates the return for a given conversion (in the reserve token)
-    ///
-    ///     Formula:
+    /// @notice Returns the sale value for a given amount (in the main token) as a conversion into the reserve token.
+    /// @notice Formula:
     ///     Return = reserveBalance * (1 - (1 - sellAmount / supply) ^ (1 / (reserveRatio / 1000000)))
-    ///
-    ///     @param supply            token total supply
-    ///     @param reserveBalance    total reserve
-    ///     @param reserveRatio      constant reserve Ratio, represented in ppm, 1-1000000
-    ///     @param sellAmount        sell amount, in the token itself
-    ///
-    ///     @return saleReturn return amount
+    /// @param supply token total supply
+    /// @param reserveBalance total reserve
+    /// @param reserveRatio reserve ratio, represented in ppm, 1-1000000
+    /// @param sellAmount amount of tokens to sell
+    /// @return saleReturn return of the conversion
     function _calculateBancorFormulaSaleReturn(
         uint256 supply,
         uint256 reserveBalance,
         uint32 reserveRatio,
         uint256 sellAmount
     ) internal view returns (uint256 saleReturn) {
-        // validate input
+        // Validate input
         if (supply == 0 || reserveBalance == 0 || reserveRatio == 0 || reserveRatio > MAX_RATIO || sellAmount > supply)
         {
             revert BancorFormula__InvalidInput();
         }
 
-        // special case for 0 sell amount
+        // If the sell amount is 0, return 0
         if (sellAmount == 0) {
             return 0;
         }
 
-        // special case for selling the entire supply
+        // If the sell amount is equal to the supply, return the reserve balance
         if (sellAmount == supply) {
             return reserveBalance;
         }
 
-        // special case if the ratio = 100%
+        // If the ratio is 100%, return the simplified formula
         if (reserveRatio == MAX_RATIO) {
             return (reserveBalance * sellAmount) / supply;
         }
@@ -266,29 +264,23 @@ abstract contract BancorFormula {
         return (temp1 - temp2) / result;
     }
 
-    /// General Description:
-    ///         Determine a value of precision.
-    ///         Calculate an integer approximation of (baseN / baseD) ^ (expN / expD) * 2 ^ precision.
-    ///         Return the result along with the precision used.
-    ///
-    ///     Detailed Description:
-    ///         Instead of calculating "base ^ exp", we calculate "e ^ (log(base) * exp)".
-    ///         The value of "log(base)" is represented with an integer slightly smaller than "log(base) * 2 ^ precision".
-    ///         The larger "precision" is, the more accurately this value represents the real value.
-    ///         However, the larger "precision" is, the more bits are required in order to store this value.
-    ///         And the exponentiation function, which takes "x" and calculates "e ^ x", is limited to a maximum exponent (maximum value of "x").
-    ///         This maximum exponent depends on the "precision" used, and it is given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
-    ///         Hence we need to determine the highest precision which can be used for the given input, before calling the exponentiation function.
-    ///         This allows us to compute "base ^ exp" with maximum accuracy and without exceeding 256 bits in any of the intermediate computations.
-    ///         This functions assumes that "expN < 2 ^ 256 / log(MAX_NUM - 1)", otherwise the multiplication should be replaced with a "safeMul".
-    ///
-    ///     @param baseN        base numerator
-    ///     @param baseD        base denominator
-    ///     @param expN         exponent numerator
-    ///     @param expD         exponent denominator
-    ///
-    ///     @return result       exponentiation result
-    ///     @return precision    precision used
+    /// @notice Returns the exponentiation result along with the precision used.
+    /// @dev Detailed Description:
+    ///     Instead of calculating "base ^ exp", we calculate "e ^ (log(base) * exp)".
+    ///     The value of "log(base)" is represented with an integer slightly smaller than "log(base) * 2 ^ precision".
+    ///     The larger "precision" is, the more accurately this value represents the real value.
+    ///     However, the larger "precision" is, the more bits are required in order to store this value.
+    ///     And the exponentiation function, which takes "x" and calculates "e ^ x", is limited to a maximum exponent (maximum value of "x").
+    ///     This maximum exponent depends on the "precision" used, and it is given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
+    ///     Hence we need to determine the highest precision which can be used for the given input, before calling the exponentiation function.
+    ///     This allows us to compute "base ^ exp" with maximum accuracy and without exceeding 256 bits in any of the intermediate computations.
+    ///     This functions assumes that "expN < 2 ^ 256 / log(MAX_NUM - 1)", otherwise the multiplication should be replaced with a "safeMul".
+    /// @param baseN base numerator
+    /// @param baseD base denominator
+    /// @param expN exponent numerator
+    /// @param expD exponent denominator
+    /// @return result exponentiation result
+    /// @return precision precision used
     function _power(uint256 baseN, uint256 baseD, uint32 expN, uint32 expD)
         internal
         view
@@ -324,13 +316,11 @@ abstract contract BancorFormula {
         }
     }
 
-    /// The global "maxExpArray" is sorted in descending order, and therefore the following statements are equivalent:
-    ///     - This function finds the position of [the smallest value in "maxExpArray" larger than or equal to "x"]
-    ///     - This function finds the highest position of [a value in "maxExpArray" larger than or equal to "x"]
-    ///
-    ///      @param x           input
-    ///
-    ///      @return position    position of the value in the array
+    /// @notice The global "maxExpArray" is sorted in descending order, and therefore the following statements are equivalent:
+    ///     - Returns the position of [the smallest value in "maxExpArray" larger than or equal to "x"].
+    ///     - Returns the highest position of [a value in "maxExpArray" larger than or equal to "x"].
+    /// @param x input
+    /// @return position position of the value in the array
     function _findPositionInMaxExpArray(uint256 x) internal view returns (uint8 position) {
         uint8 lo = MIN_PRECISION;
         uint8 hi = MAX_PRECISION;
@@ -358,14 +348,12 @@ abstract contract BancorFormula {
         return 0;
     }
 
-    /// Compute log(x / FIXED_1) * FIXED_1.
-    ///     This functions assumes that "x >= FIXED_1", because the output would be negative otherwise.
-    ///
-    ///     @param x         input
-    ///
-    ///     @return result   logarithm of x
+    /// @notice Returns the logarithm of a given input.
+    /// @dev This functions assumes that "x >= FIXED_1", because the output would be negative otherwise.
+    /// @param x input
+    /// @return result logarithm of x
     function _generalLog(uint256 x) internal pure returns (uint256 result) {
-        // If x >= 2, then we compute the integer part of log2(x), which is larger than 0.
+        // If x >= 2, then we compute the integer part of log2(x), which is larger than 0
         if (x >= FIXED_2) {
             uint8 count = _floorLog2(x / FIXED_1);
             // Remove the integer part of x
@@ -374,7 +362,7 @@ abstract contract BancorFormula {
             result = count * FIXED_1;
         }
 
-        // If x > 1, then we compute the fraction part of log2(x), which is larger than 0.
+        // If x > 1, then we compute the fraction part of log2(x), which is larger than 0
         if (x > FIXED_1) {
             for (uint8 i = MAX_PRECISION; i > 0; --i) {
                 // Square x to make it more likely to be above FIXED_2 for higher precision
@@ -392,11 +380,9 @@ abstract contract BancorFormula {
         return result * LN2_NUMERATOR / LN2_DENOMINATOR;
     }
 
-    /// Compute the largest integer smaller than or equal to the binary logarithm of the input.
-    ///
-    ///      @param x       input
-    ///
-    ///      @return result  result
+    /// @notice Returns the largest integer smaller than or equal to the binary logarithm of the input.
+    /// @param x input
+    /// @return result result
     function _floorLog2(uint256 x) internal pure returns (uint8 result) {
         if (x < 256) {
             // At most 8 iterations
@@ -419,16 +405,14 @@ abstract contract BancorFormula {
         return result;
     }
 
-    /// This function can be auto-generated by the script 'PrintFunctionGeneralExp.py'.
-    ///     It approximates "e ^ x" via maclaurin summation: "(x^0)/0! + (x^1)/1! + ... + (x^n)/n!".
+    /// @notice Returns the exponentiation of a given input.
+    /// @dev It approximates "e ^ x" via maclaurin summation: "(x^0)/0! + (x^1)/1! + ... + (x^n)/n!".
     ///     It returns "e ^ (x / 2 ^ precision) * 2 ^ precision", that is, the result is upshifted for accuracy.
     ///     The global "maxExpArray" maps each "precision" to "((maximumExponent + 1) << (MAX_PRECISION - precision)) - 1".
     ///     The maximum permitted value for "x" is therefore given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
-    ///
-    ///     @param x           input
-    ///     @param precision   precision
-    ///
-    ///     @return result      result
+    /// @param x input
+    /// @param precision precision
+    /// @return result result
     function _generalExp(uint256 x, uint8 precision) internal pure returns (uint256 result) {
         uint256 xi = x;
 
@@ -503,19 +487,17 @@ abstract contract BancorFormula {
         return result / 0x688589cc0e9505e2f2fee5580000000 + x + (ONE << precision); // divide by 33! and then add x^1 / 1! + x^0 / 0!
     }
 
-    /// Return log(x / FIXED_1) * FIXED_1
-    ///     Input range: FIXED_1 <= x <= OPT_LOG_MAX_VAL - 1
-    ///     Auto-generated via 'PrintFunctionOptimalLog.py'
-    ///     Detailed description:
-    ///     - Rewrite the input as a product of natural exponents and a single residual r, such that 1 < r < 2
-    ///     - The natural logarithm of each (pre-calculated) exponent is the degree of the exponent
-    ///     - The natural logarithm of r is calculated via Taylor series for log(1 + x), where x = r - 1
-    ///     - The natural logarithm of the input is calculated by summing up the intermediate results above
-    ///     - For example: log(250) = log(e^4 * e^1 * e^0.5 * 1.021692859) = 4 + 1 + 0.5 + log(1 + 0.021692859)
-    ///
-    ///     @param x         input
-    ///
-    ///     @return result   result
+    /// @notice Returns the logarithm of a given input.
+    /// @dev Returns log(x / FIXED_1) * FIXED_1.
+    ///     Input range: FIXED_1 <= x <= OPT_LOG_MAX_VAL - 1.
+    /// @dev Detailed description:
+    ///     - Rewrite the input as a product of natural exponents and a single residual r, such that 1 < r < 2.
+    ///     - The natural logarithm of e    -calculated) exponent is the degree of the exponent.
+    ///     - The natural logarithm of r is calculated via Taylor series for log(1 + x), wher   - 1.
+    ///     - The natural logarithm of the input is calculated by summing up the intermediate results above.
+    ///     - For example: log(250) = log(e^4 * e^1 * e^0.5 * 1.021692859) = 4 + 1 + 0.5 + log(1 + 0.021692859).
+    /// @param x input
+    /// @return result result
     function _optimalLog(uint256 x) internal pure returns (uint256 result) {
         uint256 y;
         uint256 z;
@@ -577,19 +559,17 @@ abstract contract BancorFormula {
         return result;
     }
 
-    /// Return e ^ (x / FIXED_1) * FIXED_1
-    ///     Input range: 0 <= x <= OPT_EXP_MAX_VAL - 1
-    ///     Auto-generated via 'PrintFunctionOptimalExp.py'
-    ///     Detailed description:
-    ///     - Rewrite the input as a sum of binary exponents and a single residual r, as small as possible
-    ///     - The exponentiation of each binary exponent is given (pre-calculated)
-    ///     - The exponentiation of r is calculated via Taylor series for e^x, where x = r
-    ///     - The exponentiation of the input is calculated by multiplying the intermediate results above
-    ///     - For example: e^5.021692859 = e^(4 + 1 + 0.5 + 0.021692859) = e^4 * e^1 * e^0.5 * e^0.021692859
-    ///
-    ///     @param x         input
-    ///
-    ///     @return result   result
+    /// @notice Returns the exponentiation of a given input.
+    /// @dev Return e ^ (x / FIXED_1) * FIXED_1.
+    ///     Input range: 0 <= x <= OPT_EXP_MAX_VAL - 1.
+    /// @dev Detailed description:
+    ///     - Rewrite the input as a sum of binary exponents and a single residual r, as small as possible.
+    ///     - The exponentiation of each binary exponent is given (pre-calculated).
+    ///     - The exponentiation of r is calculated via Taylor series for e^x, where x = r.
+    ///     - The exponentiation of the input is calculated by multiplying the intermediate results above.
+    ///     - For example: e^5.021692859 = e^(4 + 1 + 0.5 + 0.021692859) = e^4 * e^1 * e^0.5 * e^0.021692859.
+    /// @param x input
+    /// @return result result
     function _optimalExp(uint256 x) internal pure returns (uint256 result) {
         uint256 y;
         uint256 z;
@@ -641,9 +621,9 @@ abstract contract BancorFormula {
         // Normalize and scale the result
         result = result / 0x21c3677c82b40000 + y + FIXED_1; // divide by 20! and then add y^1 / 1! + y^0 / 0!
 
-        // Check bits in `x` to determine which powers of 2 are present.
-        // If a bit is set, multiply the result by the corresponding power of 2.
-        // This is done to increase the precision of the result.
+        // Check bits in `x` to determine which powers of 2 are present
+        // If a bit is set, multiply the result by the corresponding power of 2
+        // This is done to increase the precision of the result
         if ((x & 0x010000000000000000000000000000000) != 0) {
             result = result * 0x1c3d6a24ed82218787d624d3e5eba95f9 / 0x18ebef9eac820ae8682b9793ac6d1e776;
         } // multiply by e^2^(-3)

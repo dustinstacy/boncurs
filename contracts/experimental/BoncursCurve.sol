@@ -10,7 +10,7 @@ abstract contract BoncursCurve is BoncursFormula {
     /// @param supply token total supply
     /// @param reserveBalance balance of the reserve token
     /// @param initialCost initial cost of the token
-    /// @param scalingFactor scaling factor of the curve
+    /// @param scalingFactor scaling factor, represented in basis points, 1-10000 scaling factor of the curve
     /// @param amount amount of tokens to purchase
     /// @return purchaseCost cost of the conversion
     function getPurchaseCost(

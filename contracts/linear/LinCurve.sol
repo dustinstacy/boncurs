@@ -10,7 +10,7 @@ abstract contract LinCurve is LinFormula {
     /// @param supply token total supply
     /// @param reserveBalance current balance of the reserve token
     /// @param initialCost initial cost of the token
-    /// @param scalingFactor scaling factor for the token
+    /// @param scalingFactor scaling factor, represented in ppm, 1-1000000  token
     /// @param depositAmount amount of tokens to purchase
     /// @return purchaseReturn return of the conversion
     function getPurchaseReturn(
@@ -27,7 +27,7 @@ abstract contract LinCurve is LinFormula {
     /// @param supply token total supply
     /// @param reserveBalance balance of the reserve token
     /// @param initialCost initial cost of the token
-    /// @param scalingFactor scaling factor for the token
+    /// @param scalingFactor scaling factor, represented in ppm, 1-1000000  token
     /// @param sellAmount amount of tokens to sell
     /// @return saleReturn return of the conversion
     function getSaleReturn(

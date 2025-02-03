@@ -9,7 +9,7 @@ abstract contract ExpTokenBasedCurve is ExpTokenBasedFormula {
     /// Returns the purchase cost using an Exponential Token Based Curve.
     /// @param supply token total supply
     /// @param initialCost initial cost of the token
-    /// @param scalingFactor scaling factor for the token
+    /// @param scalingFactor scaling factor, represented in basis points, 1-10000
     /// @param amount amount of tokens to purchase
     /// @return purchaseCost cost of the conversion
     function getPurchaseCost(uint256 supply, uint256 initialCost, uint32 scalingFactor, uint256 amount)
@@ -23,7 +23,7 @@ abstract contract ExpTokenBasedCurve is ExpTokenBasedFormula {
     /// Returns the sale value using an Exponential Token Based Curve.
     /// @param supply token total supply
     /// @param initialCost initial cost of the token
-    /// @param scalingFactor scaling factor for the token
+    /// @param scalingFactor scaling factor, represented in basis points, 1-10000
     /// @param sellAmount amount of tokens to sell
     /// @return saleReturn return of the conversion
     function getSaleReturn(uint256 supply, uint256 initialCost, uint32 scalingFactor, uint256 sellAmount)

@@ -2,37 +2,28 @@
 pragma solidity ^0.8.28;
 
 /// @title  LinFormula
-/// @author Dustin Stacy
-/// @notice Provides functions for calculating the purchase and sale return values on a linear curve using a scaling factor
-///         This formula converts a given reserve token amount to a token amount and vice versa
+/// @notice This contract provides functions for calculating the purchase and sale return values on a linear curve using a scaling factor.
+///     The formula converts a given reserve token amount into a token return and the sale of a token amount into a reserve token return.
 abstract contract LinFormula {
-    // Max scaling factor in parts per million
-    uint32 private constant MAX_SCALE = 100000000; // 10000%
-    // 1:1 scaling factor in parts per million
-    uint32 private constant PURE_LINEAR_SCALE = 1000000; // 100%
-    // Decimal precision (1 Ether)
-    uint256 private constant WAD = 10 ** 18;
     /// @dev Value that represents the point at which the optimal function approximations are still effective
-    uint256 private constant OPTIMAL_TERM_MAX_VAL = 0x6a;
+    uint8 private constant OPTIMAL_TERM_MAX_VAL = 0x6a;
+    /// @dev Max scaling factor in parts per million
+    uint32 private constant MAX_SCALE = 100000000; // 10000%
+    /// @dev 1:1 scaling factor in parts per million
+    uint32 private constant PURE_LINEAR_SCALE = 1000000; // 100%
+    /// @dev Wei as decimal precision for calculations
+    uint256 private constant WAD = 10 ** 18;
 
     // Custom errors
     error LinFormula__InvalidInput();
 
-    /// @dev given a token supply, reserve balance, initial price, scaling factor and a deposit amount (in the reserve token),
-    ///     calculates the return for a given conversion (in the main token)
-    ///
-    ///     If the deposit amount is less than the current token balance, the return is calculated based on the current token cost.
-    ///     If the deposit amount is greater than the current token balance, the variables are caliabrated to move to the next token.
-    ///     Then amount of whole tokens the deposit can stil cover is calculated using a sum of an arithmetic series rounded down to the nearest integer.
-    ///     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
-    ///
-    ///     @param supply            token total supply
-    ///     @param reserveBalance    total reserve balance
-    ///     @param initialCost      initial price of the token
-    ///     @param scalingFactor     scaling factor for the token
-    ///     @param depositAmount     deposit amount, in reserve token
-    ///
-    ///     @return purchaseReturn return amount
+    /// @notice Returns the purchase value for a given amount (in the reserve token) as a conversion into the main token.
+    /// @param supply token total supply
+    /// @param reserveBalance balance of the reserve token
+    /// @param initialCost initial cost of the token
+    /// @param scalingFactor scaling factor, represented in ppm, 1-1000000
+    /// @param depositAmount deposit amount, in reserve token
+    ///  @return purchaseReturn return amount
     function _calculateLinPurchaseReturn(
         uint256 supply,
         uint256 reserveBalance,
@@ -50,7 +41,7 @@ abstract contract LinFormula {
             return 0;
         }
 
-        // Determine the current token number, cost, and balance
+        // Determine the current token number, cost, and balance remaining until the next token
         uint256 currentToken = (supply / WAD) + 1;
         uint256 currentTokenCost = _currentTokenCost(currentToken, scalingFactor, initialCost);
         uint256 currentTokenBalance = _totalCostOfTokens(currentToken, scalingFactor, initialCost) - reserveBalance;
@@ -100,21 +91,13 @@ abstract contract LinFormula {
         return purchaseReturn;
     }
 
-    /// @dev given a token supply, reserve balance, initial price, scaling factor and a sell amount (in the main token),
-    ///     calculates the return for a given conversion (in the reserve token)
-    ///
-    ///     If the sell amount is less than the current token fragment, the return is calculated based on the current token cost.
-    ///     If the sell amount is greater than the current token fragment, the variables are calibrated to move to the previous token.
-    ///     Then the amount of whole tokens left in the sale is converted to the reserve token and added to the return.
-    ///     If there is a remainder, the final addition to the return is calculated based on the new current token cost.
-    ///
-    ///     @param supply            token total supply
-    ///     @param reserveBalance    total reserve
-    ///     @param initialCost      initial price of the token
-    ///     @param scalingFactor     scaling factor for the token
-    ///     @param sellAmount        sell amount, in the token itself
-    ///
-    ///    @return saleReturn return amount
+    /// @notice Returns the sale value for a given amount (in the main token) as a conversion into the reserve token.
+    /// @param supply token total supply
+    /// @param reserveBalance balance of the reserve token
+    /// @param initialCost initial cost of the token
+    /// @param scalingFactor scaling factor, represented in ppm, 1-1000000
+    /// @param sellAmount amount of tokens to sell
+    /// @return saleReturn return of the conversion
     function _calculateLinSaleReturn(
         uint256 supply,
         uint256 reserveBalance,
@@ -186,70 +169,81 @@ abstract contract LinFormula {
         return saleReturn;
     }
 
-    /// Calculate the total cost of tokens up to the current token
-    ///
-    /// @param currentToken The current token number
-    /// @param scalingFactor The scaling factor for the token
-    /// @param initialCost The initial price of the token
-    ///
-    /// @return tokenCost The total cost of tokens up to the current token
+    /// @notice Returns the total cost of tokens up to the current token.
+    /// @param currentToken current token number
+    /// @param scalingFactor scaling factor, represented in ppm, 1-1000000
+    /// @param initialCost initial cost of the token
+    /// @return totalCost total cost of tokens up to the current token
     function _totalCostOfTokens(uint256 currentToken, uint32 scalingFactor, uint256 initialCost)
         internal
         pure
-        returns (uint256 tokenCost)
+        returns (uint256 totalCost)
     {
+        // If the current token is 1, return the initial cost
         if (currentToken == 1) {
             return initialCost;
         } else if (scalingFactor == PURE_LINEAR_SCALE) {
-            ((currentToken * (currentToken + 1) * initialCost) * scalingFactor / 2) / PURE_LINEAR_SCALE;
+            // If the scaling factor is 1:1, use the linear formula without any adjustments
+            totalCost = ((currentToken * (currentToken + 1) * initialCost) * scalingFactor / 2) / PURE_LINEAR_SCALE;
         }
 
+        // Calculate the initial cost adjustment based on the scaling factor
         uint256 initialCostAdjustment = _calculateInitialCostAdjustment(initialCost, scalingFactor);
+        // Calculate the raw cost of the tokens up to the current token
         uint256 rawCost = (currentToken * (currentToken + 1) * initialCost) * scalingFactor / 2 / PURE_LINEAR_SCALE;
-        tokenCost =
+        // If the scaling factor is greater, add the adjustment, otherwise subtract it from the raw cost
+        totalCost =
             (scalingFactor > PURE_LINEAR_SCALE) ? rawCost + initialCostAdjustment : rawCost - initialCostAdjustment;
     }
 
-    /// Calculate the current token cost
-    ///
-    /// @param currentToken The current token number
-    /// @param scalingFactor The scaling factor for the token
-    /// @param initialCost The initial price of the token
-    ///
-    /// @return currentTokenCost The current token cost
+    /// @notice Returns the cost of the current token.
+    /// @param currentToken current token number
+    /// @param scalingFactor scaling factor, represented in ppm, 1-1000000
+    /// @param initialCost initial cost of the token
+    /// @return currentTokenCost current token cost
     function _currentTokenCost(uint256 currentToken, uint32 scalingFactor, uint256 initialCost)
         internal
         pure
         returns (uint256 currentTokenCost)
     {
+        // If the current token is 1, return the initial cost
         if (currentToken == 1) {
             return initialCost;
         } else if (scalingFactor == PURE_LINEAR_SCALE) {
+            // If the scaling factor is 1:1, use the linear formula without any adjustments
             return initialCost * currentToken * scalingFactor / PURE_LINEAR_SCALE;
         }
 
+        // Calculate the initial cost adjustment based on the scaling factor
         uint256 initialCostAdjustment = _calculateInitialCostAdjustment(initialCost, scalingFactor);
+        // Calculate the raw cost of the current token
         uint256 rawCost = initialCost * currentToken * scalingFactor / PURE_LINEAR_SCALE;
+        // If the scaling factor is greater, subtract the adjustment, otherwise add it to the raw cost
         return (scalingFactor > PURE_LINEAR_SCALE) ? rawCost - initialCostAdjustment : rawCost + initialCostAdjustment;
     }
 
+    /// @notice Returns the initial cost adjustment based on the scaling factor.
+    /// @dev Calculates the difference between the initial cost and the incremental value applied to each token after the first.
+    /// @param initialCost initial cost of the token
+    /// @param scalingFactor scaling factor, represented in ppm, 1-1000000
+    /// @return initialCostAdjustment initial cost adjustment
     function _calculateInitialCostAdjustment(uint256 initialCost, uint32 scalingFactor)
         internal
         pure
         returns (uint256 initialCostAdjustment)
     {
+        // Calculate the scaled initial cost
         uint256 scaledInitialCost = initialCost * scalingFactor / PURE_LINEAR_SCALE;
+        // If the scaling factor is greater, deduct the initial cost from the scaled initial cost, otherwise subtract the scaled initial cost from the initial cost
         return (scalingFactor > PURE_LINEAR_SCALE) ? scaledInitialCost - initialCost : initialCost - scaledInitialCost;
     }
 
-    /// Calculate the amount of whole tokens the deposit can still cover
-    ///
-    /// @param depositAmount The deposit amount, in reserve token
-    /// @param reserveBalance The total reserve balance
-    /// @param initialCost The initial price of the token
-    /// @param currentToken The current token number
-    ///
-    /// @return tokenCount The amount of whole tokens the deposit can still cover
+    /// @notice Returns the amount of whole tokens the deposit can still cover.
+    /// @param depositAmount deposit amount, in reserve token
+    /// @param reserveBalance balance of the reserve token
+    /// @param initialCost initial cost of the token
+    /// @param currentToken current token number
+    /// @return tokenCount amount of whole tokens the deposit can still cover
     function _calculateTokenCount(
         uint256 depositAmount,
         uint256 reserveBalance,
@@ -258,7 +252,6 @@ abstract contract LinFormula {
         uint256 currentToken
     ) internal pure returns (uint256 tokenCount) {
         // Calculate the value inside the square root of the quadratic formula
-
         uint256 term = (2 * ((depositAmount + reserveBalance) * scalingFactor) + WAD) / initialCost / scalingFactor;
         term = term * PURE_LINEAR_SCALE / scalingFactor;
         uint256 sqrtTerm;
@@ -276,8 +269,10 @@ abstract contract LinFormula {
         tokenCount = sqrtTerm - currentToken;
     }
 
-    // as proposed in EIP-7054
-    function _generalSqrt(uint256 x) internal pure returns (uint128) {
+    /// @notice Returns the square root of a given value as proposed in EIP-7054.
+    /// @param x value to calculate the square root of
+    /// @return z square root of the value
+    function _generalSqrt(uint256 x) internal pure returns (uint128 z) {
         if (x == 0) {
             return 0;
         } else {
@@ -316,12 +311,15 @@ abstract contract LinFormula {
             r = (r + x / r) >> 1;
             r = (r + x / r) >> 1;
             uint256 r1 = x / r;
-            return uint128(r < r1 ? r : r1);
+            z = uint128(r < r1 ? r : r1);
         }
     }
 
-    // Basic Bablyonian method
+    /// @notice Returns the square root of a given value using the Babylonian method.
+    /// @param y value to calculate the square root of
+    /// @return z square root of the value
     function _optimalSqrt(uint256 y) internal pure returns (uint256 z) {
+        // If y is greater than 3, calculate the square root using the Babylonian method
         if (y > 3) {
             z = y;
             uint256 x = y / 2 + 1;
@@ -330,13 +328,16 @@ abstract contract LinFormula {
                 x = (y / x + x) / 2;
             }
         } else if (y != 0) {
-            // instead of returning 1, we add 1 to account for the current token when returning a root value less than 2;
+            // return 2 to account for the current token when returning a root value less than 3
             z = 2;
         }
     }
 
-    function _getLength(uint256 x) internal pure returns (uint256) {
-        uint256 length = 0;
+    /// @notice Returns the length of a given number.
+    /// @param x number to calculate the length of
+    /// @return length length of the number
+    function _getLength(uint256 x) internal pure returns (uint256 length) {
+        length = 0;
         while (x > 0) {
             x /= 10;
             length++;

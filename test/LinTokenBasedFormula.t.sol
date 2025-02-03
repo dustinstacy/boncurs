@@ -24,7 +24,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = PURE_LINEAR_SCALE;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -40,7 +40,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost2() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = PURE_LINEAR_SCALE;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -56,7 +56,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost3() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = PURE_LINEAR_SCALE;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 amount = 2;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -72,7 +72,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost4() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 20000;
+        uint32 scalingFactor = 20000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -88,7 +88,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost5() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 5000;
+        uint32 scalingFactor = 5000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -104,7 +104,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost6() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 5000;
+        uint32 scalingFactor = 5000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -120,7 +120,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost7() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 5000;
+        uint32 scalingFactor = 5000;
         uint256 amount = 2;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -136,7 +136,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost8() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 5000;
+        uint32 scalingFactor = 5000;
         uint256 amount = 5;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -152,7 +152,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost9() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 20000;
+        uint32 scalingFactor = 20000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -168,7 +168,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost10() public view {
         uint256 supply = 27;
         uint256 initialCost = 5 * WAD;
-        uint256 scalingFactor = 2000;
+        uint32 scalingFactor = 2000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -184,7 +184,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCost11() public view {
         uint256 supply = 12;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = 50000;
+        uint32 scalingFactor = 50000;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -211,7 +211,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCostReturnsZero() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = PURE_LINEAR_SCALE;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 amount = 0;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -222,7 +222,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedPurchaseCostReturnsInitialCost() public view {
         uint256 supply = 0;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = PURE_LINEAR_SCALE;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 amount = 1;
 
         uint256 totalCost = harness.calculateLinTokenBasedPurchaseCost(supply, initialCost, scalingFactor, amount);
@@ -247,7 +247,7 @@ contract LinTokenBasedFormulaTest is Test {
     function test_calculateLinTokenBasedSaleReturnReturnsZero() public view {
         uint256 supply = 1;
         uint256 initialCost = WAD;
-        uint256 scalingFactor = PURE_LINEAR_SCALE;
+        uint32 scalingFactor = PURE_LINEAR_SCALE;
         uint256 amount = 0;
 
         uint256 saleReturn = harness.calculateLinTokenBasedSaleReturn(supply, initialCost, scalingFactor, amount);
