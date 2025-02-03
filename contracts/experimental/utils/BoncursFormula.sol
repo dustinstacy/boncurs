@@ -8,11 +8,11 @@ pragma solidity ^0.8.28;
 ///     and the reserve balance grows, the value of the token increases and cannot go down. Used to reward early adopters and incentivize
 ///     the holding of the token. Also, with the way the curve tends to move towards flat over time, it does not punish late adopters.
 abstract contract BoncursFormula {
-    ///@dev Minimum scale in basis points. Prevents loss of value.
+    ///@dev Minimum scale in basis points. Prevents loss of value
     uint32 constant MIN_SCALE = 10000; // 100%
-    ///@dev Maximum scale in basis points.
+    ///@dev Maximum scale in basis points
     uint32 constant MAX_SCALE = 1000000; // 10000%
-    ///@dev Wei as decimal precision for calculations.
+    ///@dev Wei as decimal precision for calculations
     uint256 constant WAD = 10 ** 18;
 
     // Custom errors

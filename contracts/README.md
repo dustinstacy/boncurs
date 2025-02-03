@@ -1,10 +1,9 @@
 <h1 align="center">
-Boncurs Bonding Curve Library
+Boncurs Bonding Curve Contracts
 </h1>
 
 <p align="center">
   <a href="https://boncurs.gitbook.io/boncurs/"><img src="https://img.shields.io/static/v1?message=Documented%20on%20GitBook&logo=gitbook&logoColor=ffffff&label=%20&labelColor=5c5c5c&color=3F89A1"></a>
-  <a href="https://www.npmjs.com/package/boncurs"><img src="https://img.shields.io/npm/v/boncurs"/></a>
   <a href="./#license"><img src="https://img.shields.io/badge/License-MIT-brightgreen"/></a>
 </p>
 
@@ -45,14 +44,6 @@ Current available curves:
 ```
 $ npm install boncurs
 ```
-
-#### Foundry (git)
-
-```
-$ forge install dustinstacy/boncurs
-```
-
-Add `@boncurs/=lib/boncurs/` in `remappings.txt.`
 
 ## Usage
 

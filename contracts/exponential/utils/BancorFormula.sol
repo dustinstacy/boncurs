@@ -492,8 +492,8 @@ abstract contract BancorFormula {
     ///     Input range: FIXED_1 <= x <= OPT_LOG_MAX_VAL - 1.
     /// @dev Detailed description:
     ///     - Rewrite the input as a product of natural exponents and a single residual r, such that 1 < r < 2.
-    ///     - The natural logarithm of e    -calculated) exponent is the degree of the exponent.
-    ///     - The natural logarithm of r is calculated via Taylor series for log(1 + x), wher   - 1.
+    ///     - The natural logarithm of each (pre-calculated) exponent is the degree of the exponent.
+    ///     - The natural logarithm of r is calculated via Taylor series for log(1 + x), where x = r - 1.
     ///     - The natural logarithm of the input is calculated by summing up the intermediate results above.
     ///     - For example: log(250) = log(e^4 * e^1 * e^0.5 * 1.021692859) = 4 + 1 + 0.5 + log(1 + 0.021692859).
     /// @param x input

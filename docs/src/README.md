@@ -13,9 +13,8 @@ Boncurs Bonding Curve Library
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
-  <a href="#learn-more">Learn More</a> •
-  <a href="#license">License</a> •
-  <a href="https://boncurs.gitbook.io/boncurs/">Docs</a>
+  <a href="#tools">Tools</a> •
+  <a href="#license">License</a>
 </p>
 
 ***
@@ -78,11 +77,9 @@ contract ExampleImplementation is ExpCurve {
 }
 ```
 
-## Learn More
+## Tools
 
-Visit the documentation site: [Docs](https://boncurs.gitbook.io/boncurs)
-
-Tools for working with the library: [Boncurs Bonding Curve Tools](https://github.com/dustinstacy/boncurs-tools)
+[Boncurs Bonding Curve Tools](https://github.com/dustinstacy/boncurs-tools)
 
 ## License
 
