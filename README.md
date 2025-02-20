@@ -41,13 +41,13 @@ Current available curves:
 
 ## Installation
 
-#### Hardhat (npm)
+#### Using npm
 
 ```
 $ npm install boncurs
 ```
 
-#### Foundry (git)
+#### Using Foundry
 
 ```
 $ forge install dustinstacy/boncurs
