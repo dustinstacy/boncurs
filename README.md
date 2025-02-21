@@ -80,6 +80,7 @@ contract ExampleImplementation is BoncursCurve {
 ```
 
 ## Learn More
+Introducing the Boncurs Bonding Curve Library: [Medium](https://medium.com/@cloudwalker0013/introducing-the-boncurs-bonding-curve-library-52ad64a51b85)
 
 Visit the documentation site: [Docs](https://boncurs.gitbook.io/boncurs)
 
